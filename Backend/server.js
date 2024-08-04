@@ -1,5 +1,5 @@
 const express = require("express");
-const { JsonRpcProvider, Contract, parseUnits, Wallet } = require("ethers"); // Direct import for parseUnits
+const { JsonRpcProvider, Contract, parseUnits, Wallet, formatUnits } = require("ethers"); // Direct import for parseUnits
 const cors = require("cors");
 const app = express();
 const port = 5001;
@@ -47,6 +47,15 @@ app.post("/api/reward", async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Reward transfer failed", error });
   }
+});
+
+app.get("/api/rewardpool-balance", async (req, res) => {
+    try {
+        const balance = await trustTokenContract.balanceOf(trustTokenAddress);
+        res.json({ balance: formatUnits(balance, 18) });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch reward pool balance", error });
+    }
 });
 
 app.listen(port, () => {
