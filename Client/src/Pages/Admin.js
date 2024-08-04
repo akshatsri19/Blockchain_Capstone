@@ -39,7 +39,7 @@ const Admin= () => {
   };
 
   const handleTransferReward = async () => {
-    const response = await fetch("http://localhost:5001/api/transfer", {
+    const response = await fetch("http://localhost:5001/api/reward", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
