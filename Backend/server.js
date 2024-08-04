@@ -1,5 +1,5 @@
 const express = require("express");
-const { JsonRpcProvider, Contract, parseUnits } = require("ethers"); // Direct import for parseUnits
+const { JsonRpcProvider, Contract, parseUnits, Wallet } = require("ethers"); // Direct import for parseUnits
 const cors = require("cors");
 const app = express();
 const port = 5001;
@@ -7,7 +7,7 @@ const port = 5001;
 const TrustTokenABI = require("../Blockchain/artifacts/contracts/TrustTokenWithRewardPool.sol/TrustTokenWithRewardPool.json").abi;
 const provider = new JsonRpcProvider("http://127.0.0.1:8545");
 // TODO: Update it to get connected wallet address
-const wallet = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"; // use first account by hardhat 
+const wallet = new Wallet("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", provider); // use first account by hardhat 
 const trustTokenAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 const trustTokenContract = new Contract(trustTokenAddress, TrustTokenABI, wallet);
 
