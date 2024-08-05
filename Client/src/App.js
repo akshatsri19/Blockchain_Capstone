@@ -7,8 +7,8 @@ import Register from './Pages/Register';
 import RegisterUser from './Pages/RegisterUser';
 import Services from './Pages/Services';
 import Footer from './Components/Footer';
-import Minting from './Pages/Mintpage';
 import UserDashboard from './Pages/UserDashboard';
+import Admin from './Pages/Admin';
 
 const App = () => {
   return (
@@ -20,7 +20,7 @@ const App = () => {
         <Route path="/find-blood" element={<FindBlood />} />
         <Route path="/register" element={<Register />} />
         <Route path="/registerUser" element={<RegisterUser />} />
-        <Route path="/minting" element={<Minting />} />
+        <Route path="/minting" element={<Admin />} />
         <Route path="/userDashboard" element={<UserDashboard />} />
       </Routes>
       <Footer/>

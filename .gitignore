@@ -1,0 +1,8 @@
+Backend/node_modules
+.env
+
+Blockchain/node_modules/*
+Blockchain/secrets.json
+Blockchain/artifacts
+
+Client/node_modules/*
