@@ -7,8 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract TrustTokenWithRewardPool is ERC20, ERC20Permit, Ownable {
     constructor() ERC20("TrustToken", "TRUST") ERC20Permit("TrustToken") Ownable(msg.sender) {
-        _mint(msg.sender, 50000*10**18); // Initial supply
-        _mint(address(this), 30000 * 10 ** 18); // Mint to contract as reward pool
+        _mint(address(this), 100000 * 10 ** 18); // Mint to contract as reward pool
     }
 
     // Mint reward directly to recipient or transfer form reward pool
@@ -16,16 +15,16 @@ contract TrustTokenWithRewardPool is ERC20, ERC20Permit, Ownable {
         _mint(to, amount);
     }
 
-    // Airdrops
+    // Airdrops - transfer from reward pool - don't mint new tokens
     function batchMintForAirdrops(address[] calldata recipients, uint256[] calldata amounts) external onlyOwner {
         require(recipients.length == amounts.length, "Recipients and amounts length mismatch");
         for (uint256 i = 0; i < recipients.length; i++) {
-            _mint(recipients[i], amounts[i]);
+            reward(recipients[i], amounts[i]);
         }
     }
 
     // Transfer from reward pool
-    function reward(address recipient, uint256 amount) external onlyOwner {
+    function reward(address recipient, uint256 amount) public onlyOwner {
         require(balanceOf(address(this)) >= amount, "Not enough tokens in rewards pool");
         _transfer(address(this), recipient, amount);
     }
