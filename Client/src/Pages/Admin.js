@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import '../Styles/Admin.css';
 
 const Admin= () => {
@@ -8,6 +8,8 @@ const Admin= () => {
   const [amounts, setAmounts] = useState("");
   const [rewardRecipient, setRewardRecipient] = useState("");
   const [rewardAmount, setRewardAmount] = useState("");
+  const [rewardPoolBalance, setRewardPoolBalance] = useState("");
+  const [loadingBalance, setLoadingBalance] = useState(true);
 
   const handleSingleMint = async () => {
     const response = await fetch("http://localhost:5001/api/mint", {
@@ -49,14 +51,40 @@ const Admin= () => {
 
     const data = await response.json();
     console.log(data.message);
+    fetchRewardPoolBalance();
   };
+
+  const fetchRewardPoolBalance = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/api/rewardpool-balance");
+      const data = await response.json();
+      setRewardPoolBalance(data.balance);
+    } catch (error) {
+      console.error("Failed to fetch reward pool balance", error);
+    } finally {
+      setLoadingBalance(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRewardPoolBalance();
+  }, []);
 
   return (
     <div className="container">
         <h1>Admin Page</h1>
         <div className="card-container">
             <div className="card">
-                <h2>Single Mint</h2>
+                <h2>Reward Pool Balance</h2>
+                {loadingBalance ? (
+                    <p>Loading...</p>
+                ) : (
+                    <p>{rewardPoolBalance} TRUST</p>
+                )}
+            </div>
+
+            <div className="card">
+                <h2>Mint to Recipient</h2>
                 <input
                 type="text"
                 placeholder="Recipient Address"
@@ -73,7 +101,7 @@ const Admin= () => {
             </div>
 
             <div className="card">
-                <h2>Batch Mint</h2>
+                <h2>Batch Mint for Airdrops</h2>
                 <textarea
                 placeholder="Recipient Addresses (comma-separated)"
                 value={recipients}
@@ -88,7 +116,7 @@ const Admin= () => {
             </div>
 
             <div className="card">
-                <h2>Transfer Tokens</h2>
+                <h2>Transfer Tokens from Reward Pool</h2>
                 <input
                 type="text"
                 placeholder="Reward Recipient Address"
