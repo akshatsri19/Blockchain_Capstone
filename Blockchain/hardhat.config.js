@@ -1,5 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
-const { mnemonic } = require("./secrets.json");
+const { mnemonic } = require("./secrets-test.json");
 
 module.exports = {
   solidity: "0.8.20",
