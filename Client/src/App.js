@@ -9,6 +9,7 @@ import Services from './Pages/Services';
 import Footer from './Components/Footer';
 import UserDashboard from './Pages/UserDashboard';
 import Admin from './Pages/Admin';
+import UserDbTest from './Pages/UserDbTest';
 
 const App = () => {
   return (
@@ -22,6 +23,8 @@ const App = () => {
         <Route path="/registerUser" element={<RegisterUser />} />
         <Route path="/minting" element={<Admin />} />
         <Route path="/userDashboard" element={<UserDashboard />} />
+        {/* Remove this path after we integarte nft functionality in user Dashboard */}
+        <Route path="/userDBTest" element={<UserDbTest />} /> 
       </Routes>
       <Footer/>
     </Router>

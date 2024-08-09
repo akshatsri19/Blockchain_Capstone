@@ -48,6 +48,6 @@ Since MetaMask can derive accounts from a mnemonic, you can import the accounts 
 or you can import the first 3-5 accounts for testing in metamask manually.
 
 ### Smart contract address deployed on local blockchain
-TrustToken deployed to: 0x5FbDB2315678afecb367f032d93F642f64180aa3 
+TrustTokenWithRewardPool deployed to:  0x5FbDB2315678afecb367f032d93F642f64180aa3
 
-TrustTokenWithRewardPool deployed to:  0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+TrustNFT deployed to:  0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512

@@ -7,13 +7,17 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract TrustNFT is ERC721URIStorage, Ownable {
     uint256 private _tokenIdCounter;
 
+    event NFTMinted(address indexed owner, uint256 indexed tokenId, string metadataHash);
+
     constructor() ERC721("TrustBlu", "TBT") Ownable(msg.sender) {}
 
-    function mintNFT(address recipient, string memory tokenURI) public onlyOwner returns (uint256) {
+    function mintNFT(address recipient, string memory tokenURI, string memory metadataHash) public onlyOwner returns (uint256) {
         _tokenIdCounter += 1;
         uint256 newItemId = _tokenIdCounter;
         _mint(recipient, newItemId);
         _setTokenURI(newItemId, tokenURI);
+
+        emit NFTMinted(recipient, newItemId, metadataHash);  // Emit event with metadata hash
         return newItemId;
     }
 

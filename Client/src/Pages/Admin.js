@@ -10,6 +10,7 @@ const Admin= () => {
   const [rewardAmount, setRewardAmount] = useState("");
   const [rewardPoolBalance, setRewardPoolBalance] = useState("");
   const [loadingBalance, setLoadingBalance] = useState(true);
+  const [notifications, setNotifications] = useState([]); // State for NFT notifications
 
   const handleSingleMint = async () => {
     const response = await fetch("http://localhost:5001/api/mint", {
@@ -66,8 +67,37 @@ const Admin= () => {
     }
   };
 
+  const fetchNotifications = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/api/nft/notifications");
+      const data = await response.json();
+      setNotifications(data);
+    } catch (error) {
+      console.error("Failed to fetch notifications", error);
+    }
+  };
+
+  const handleMintNFT = async (notificationId) => {
+    try {
+      const response = await fetch("http://localhost:5001/api/nft/mint", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ notificationId })
+      });
+
+      const data = await response.json();
+      console.log(data.message);
+      fetchNotifications(); // Refresh notifications after minting`
+    } catch (error) {
+      console.error("Failed to mint NFT", error);
+    }
+  }
+
   useEffect(() => {
     fetchRewardPoolBalance();
+    fetchNotifications(); // Fetch notifications on component mount
   }, []);
 
   return (
@@ -81,6 +111,18 @@ const Admin= () => {
                 ) : (
                     <p>{rewardPoolBalance} TRUST</p>
                 )}
+            </div>
+
+            <div className="card">
+                <h2>Pending NFT Claims</h2>
+                <ul>
+                  {notifications.map(notification => (
+                    <li key={notification.id}>
+                      <p>Recipient: {notification.recipient}</p>
+                      <button onClick={() => handleMintNFT(notification.id)}>Mint NFT</button>
+                    </li>
+                  ))}
+                </ul>
             </div>
 
             <div className="card">

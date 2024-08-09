@@ -1134,8 +1134,8 @@
       ]
     },
     "/Users/nitu/capstone/Blockchain_Capstone/Blockchain/contracts/TrustNFT.sol": {
-      "lastModificationDate": 1723206183026,
-      "contentHash": "c3b92a7d4425df0f97a978689616c23c",
+      "lastModificationDate": 1723224730181,
+      "contentHash": "7dfded9803d8df4ab606094d33f30418",
       "sourceName": "contracts/TrustNFT.sol",
       "solcConfig": {
         "version": "0.8.20",

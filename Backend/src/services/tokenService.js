@@ -1,9 +1,8 @@
 const { Contract, parseUnits, formatUnits } = require("ethers");
 const TrustTokenABI = require("../../../Blockchain/artifacts/contracts/TrustTokenWithRewardPool.sol/TrustTokenWithRewardPool.json").abi;
-const { wallet } = require("../config/provider");
+const { wallet, trustTokenAddress } = require("../config/provider");
 
 // Initialize contract instance
-const trustTokenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const trustTokenContract = new Contract(trustTokenAddress, TrustTokenABI, wallet);
 
 class TokenService {
