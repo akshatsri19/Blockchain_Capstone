@@ -10,6 +10,7 @@ import Minting from './Pages/Mintpage';
 import UserDashboard from './Pages/UserDashboard';
 import QRCodeData from './Components/QRCodeData';
 import AdminDashboard from './Pages/AdminDashboard';
+import UserDbTest from './Pages/UserDbTest';
 
 const App = () => {
   return (
