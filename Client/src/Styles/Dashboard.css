@@ -1,0 +1,133 @@
+
+  
+  /* Root dashboard container */
+  .dashboard {
+    display: flex;
+    height: 100vh;
+    background-color: white;
+  }
+  
+  /* App bar styles */
+  .app-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+    padding: 16px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    transition: left 0.3s ease, width 0.3s ease;
+  }
+  
+  .drawer-open .app-bar {
+    left: 270px;
+    width: calc(100% - 270px);
+  }
+  
+  .drawer-closed .app-bar {
+    left: 0;
+    width: 100%;
+  }
+  
+  .app-title {
+    flex-grow: 1;
+  }
+  
+  .menu-icon,
+  .notifications-icon {
+    background: none;
+    border: none;
+    color: #3ca5dc;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  /* Drawer styles */
+  .drawer {
+    width: 270px;
+    background-color: #3ca5dc;
+    border-right: 1px solid #3ca5dc;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transition: transform 0.3s ease;
+    z-index: 999;
+  }
+  
+  .drawer-header {
+    width: 100%;
+    padding: 20px 0;
+    background-color: #3ca5dc;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .drawer-nav::before {
+    content: '';
+    position: absolute;
+    bottom: -150px;
+    left: 0;
+    width: 101%;
+    height: 100%;
+    background-color: #192841;
+    border-radius:20% 20% 0 0;
+    z-index: -1;
+  }
+
+  .drawer-header h2 {
+    color: #192841;
+    font-size: 2rem;
+    font-weight:bold;
+    margin-top: 20%;
+  }
+ 
+  
+  .drawer-nav a:hover {
+    background-color: #ffffff;
+    border-radius: 30%;
+  }
+  
+  .drawer.closed {
+    transform: translateX(-100%);
+  }
+  
+  .drawer-nav {
+    margin-top: 64px;
+    padding: 16px;
+  }
+  
+  /* Main content styles */
+  .main-content {
+    flex-grow: 1;
+    padding-top: 64px;
+    overflow-y: auto;
+    transition: margin-left 0.3s ease, width 0.3s ease;
+    padding-left: 240px;
+  }
+  
+  .drawer-open .main-content {
+    margin-left: 240px;
+  }
+  
+  
+  .drawer-closed .main-content {
+    margin-left: 0;
+  }
+  
+  .content-container {
+    padding: 16px;
+  }
+  
+  .content-item {
+    background-color: white;
+    margin-bottom: 16px;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
