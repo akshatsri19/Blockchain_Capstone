@@ -1,1 +1,9 @@
-.vscode/
+Backend/node_modules
+Backend/src/secrets/*
+.env
+
+Blockchain/node_modules/*
+Blockchain/secrets.json
+Blockchain/artifacts
+
+Client/node_modules/*

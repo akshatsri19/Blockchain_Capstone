@@ -34,6 +34,7 @@ const AppRoutes = () => {
         <Route path="/registerUser" element={<RegisterUser />} />
         <Route path="/minting" element={<Minting />} />
         <Route path="/userDashboard" element={<UserDashboard />} />
+        <Route path="/userDBTest" element={<UserDbTest />} /> 
         <Route path="/qrcode/:id" element={<QRCodeData />} />
       </Routes>
       {!isQRCodePage && <Footer />}
