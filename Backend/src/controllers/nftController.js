@@ -39,7 +39,7 @@ class NFTController {
       const { recipient, tokenURI } = notification;
       console.log("Minting NFT for recipient:", recipient);
       console.log("Token URI:", tokenURI);
-      const result = await nftMintingService.mintNFT(recipient, tokenURI, "dummy hash");
+      const result = await nftMintingService.mintNFT(recipient, tokenURI);
 
       if (result.success) {
         await notificationService.updateNotificationStatus(notificationId, 'minted');
