@@ -5,30 +5,32 @@ const { admin, db } = require("../config/firebase");
 
 // Initialize NFT contract instance
 const nftContract = new Contract(trustNFTAddress, NFT_ABI, wallet);
-console.log("NFT contract initialized with address:", nftContract);
+console.log("NFT contract initialized with address:", trustNFTAddress);
 
 class NFTMintingService {
     constructor() {
-        this.initializeEventListeners(); // Initialize event listeners when the service is created
+        this.initializeEventListeners();
     }
 
     initializeEventListeners() {
-        nftContract.on("NFTMinted", async (owner, tokenId, metadataHash) => {
-            metadataHash = "dummy hash";
-            console.log(`NFT minted: Owner: ${owner}, Token ID: ${tokenId.toString()}, Metadata Hash: "${metadataHash}"`);
-            await this.handleNFTMintedEvent(owner, tokenId.toString(), metadataHash);
+        nftContract.on("NFTMinted", async (owner, tokenId) => {
+            try {
+                console.log(`NFT minted: Owner: ${owner}, Token ID: ${tokenId.toString()}`);
+                await this.handleNFTMintedEvent(owner, tokenId.toString());
+            } catch (error) {
+                console.error("Error handling NFTMinted event:", error);
+            }
         });
     }
 
-    async handleNFTMintedEvent(owner, tokenId, metadataHash) {
+    async handleNFTMintedEvent(owner, tokenId) {
         try {
-            console.log(`Handling NFT minted event. Storing data for user: ${owner}, Token ID: ${tokenId}, Metadata Hash: ${metadataHash}`);
+            console.log(`Handling NFT minted event. Storing data for user: ${owner}, Token ID: ${tokenId}`);
             
             // Store the NFT data in Firestore
             await db.collection('nfts').doc(tokenId).set({
                 owner: owner,
                 tokenId: tokenId,
-                metadataHash: metadataHash,
                 createdAt: admin.firestore.FieldValue.serverTimestamp()
           });
     
@@ -38,9 +40,9 @@ class NFTMintingService {
         }
     }
 
-    async mintNFT(recipient, tokenURI, metadataHash) {
+    async mintNFT(recipient, tokenURI) {
         try {
-            const tx = await nftContract.mintNFT(recipient, tokenURI, metadataHash);
+            const tx = await nftContract.mintNFT(recipient, tokenURI);
             await tx.wait();
             console.log("NFT minted with token ID:", tx.events[0].args.tokenId.toString());
             return { success: true, txHash: tx.hash };
@@ -65,7 +67,6 @@ class NFTMintingService {
                 const nftData = doc.data();
                 nfts.push({
                 tokenId: nftData.tokenId,
-                metadataHash: nftData.metadataHash,
                 owner: nftData.owner,
                 });
             });
