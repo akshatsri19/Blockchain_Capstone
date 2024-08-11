@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import '../Styles/Dashboard.css';
-import logo from "../Assets/logo.png";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from '../Firebase/FirebaseConfig';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button, ProgressBar, Dropdown, Nav, Form, Modal } from 'react-bootstrap';
-import {  collection, addDoc, query, where, getDocs } from 'firebase/firestore';
-import QRCode from 'qrcode.react';  
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import QRCode from 'qrcode.react';
 import { FaHome, FaCalendarCheck, FaClipboardList } from 'react-icons/fa';
 import { useJsApiLoader, GoogleMap, Marker } from '@react-google-maps/api';
 import bloodDonationCenters from '../Datastore/datastore';
 import { Card, Row, Col } from 'react-bootstrap';
+import logo1 from "../Assets/Logo1.jpg"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
 
 
 const localIpAddress = '192.168.2.20';
@@ -27,7 +29,7 @@ const UserDashboard = () => {
       if (user) {
         setCurrentUser(user);
       } else {
-        navigate('/'); 
+        navigate('/');
       }
     });
 
@@ -78,17 +80,19 @@ const UserDashboard = () => {
         <button className="menu-icon" onClick={toggleDrawer}>
           ☰
         </button>
-        <Nav className="ml-auto" style={{marginLeft:-100}}>
+        <Nav className="ml-auto">
           <Nav.Link as={Link} to="/home" style={navLinkStyle}>Home</Nav.Link>
           <Nav.Link as={Link} to="/about" style={navLinkStyle}>About</Nav.Link>
           <Nav.Link as={Link} to="/services" style={navLinkStyle}>Services</Nav.Link>
         </Nav>
-        <div className="d-flex align-items-center" style={{marginLeft:-100}}>
-          <img src={logo} style={logoStyle} className="d-none d-md-block" alt="Logo" />
-          <img src={logo} style={responsiveLogoStyle} className="d-block d-md-none" alt="Logo" />
-          <h1 style={brandStyle}>TrustBlu</h1>
+        <div className="d-flex align-items-center" style={{ width: "30%" }}>
+          <h1 style={brandStyle}>
+            <span style={{ color: '#ab0a0f' }}>Trust</span>
+            <span style={{ color: '#4299cf' }}>Blu</span>
+          </h1>
+          <img src={logo1} style={logoStyle} className="d-none d-md-block" alt="Logo" />
         </div>
-        
+
         {currentUser && (
           <Dropdown align="end">
             <Dropdown.Toggle variant="outline-light" style={dropdownToggleStyle}>
@@ -109,7 +113,7 @@ const UserDashboard = () => {
           <h2>My Account</h2>
         </div>
         <nav className="drawer-nav">
-        <Nav.Link onClick={() => setActiveSection('dashboard')} style={sidebarLinkStyle}>
+          <Nav.Link onClick={() => setActiveSection('dashboard')} style={sidebarLinkStyle}>
             <FaHome style={iconStyle} /> My Dashboard
           </Nav.Link>
           <Nav.Link onClick={() => setActiveSection('book-appointment')} style={sidebarLinkStyle}>
@@ -128,8 +132,49 @@ const UserDashboard = () => {
 }
 
 const Dashboard = () => {
-  const totalTokens = 5000; 
+  const totalTokens = 5000;
   const earnedTokens = 1234;
+
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [profile, setProfile] = useState({
+    imageSrc: 'https://via.placeholder.com/150',
+    name: 'Michael',
+    quote: 'I am driven by a deep commitment to making a difference in the lives of others through blood donation',
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProfile({
+      ...profile,
+      [name]: value
+    });
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setProfile({
+        ...profile,
+        imageSrc: reader.result
+      });
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditClick = () => {
+    setIsEditing(!isEditing);
+  };
+
+  const handleSaveClick = () => {
+    setIsEditing(false);
+  };
+
 
   const connectWallet = async () => {
     if (window.ethereum) {
@@ -144,201 +189,186 @@ const Dashboard = () => {
     }
   };
 
+
   const styles = {
     profileContainer: {
-        display: 'flex',
-        // maxWidth: '1000px',
-        // margin: 'auto',
-        marginLeft:"-20%",
-        backgroundColor: '#f0f4f8',
-        padding: '20px',
-        borderRadius: '10px',
-        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+      display: 'flex',
+      marginLeft: "-20%",
+      padding: '20px'
     },
     leftColumn: {
-        flex: 0.5,
-        padding: '20px',
+      padding: '20px',
+      backgroundColor: '#192841',
+      borderRadius: '20px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      textAlign: 'justify',
+      margin: '20px auto',
+      color: '#3ca5dc'
     },
-    rightColumn: {
-        flex: 2,
-        padding: '20px',
-        backgroundColor: '#fff',
-        borderRadius: '10px',
-        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+    topRightColumn: {
+      display: 'flex',
+      padding: '20px',
+      backgroundColor: '#e0f7fa',
+      borderRadius: '10px',
+      boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+      flexDirection: 'row',
+      height: '50%',
+      width: '102%'
     },
-    centerColumn: {
-      flex: 2,
-        padding: '20px',
+    bottomRightColumn: {
+      padding: '20px',
+      backgroundColor: "#192841",
+      boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+      borderRadius: '10px',
+      height: '50%',
+      marginTop: 20,
+      width: '102%',
+      color: "#e0f7fa"
     },
     imageContainer: {
-        textAlign: 'center',
+      textAlign: 'center',
     },
     image: {
-        width: '150px',
-        height: '150px',
-        borderRadius: '50%',
-        border: '3px solid #333',
+      width: '150px',
+      height: '150px',
+      borderRadius: '50%',
+      border: '3px solid #333',
     },
     header: {
-        textAlign: 'center',
+      textAlign: 'center',
+      marginTop: 20,
+      color: "#e0f7fa"
     },
     blockquote: {
-        fontStyle: 'italic',
-        color: '#666',
-        textAlign: 'center',
-        margin: '20px 0',
-    },
-    personalInfo: {
-        backgroundColor: '#e0f7fa',
-        padding: '10px',
-        borderRadius: '5px',
-    },
-    traits: {
-        display: 'flex',
-        justifyContent: 'space-around',
-        marginTop: '20px',
-    },
-    traitItem: {
-        backgroundColor: '#333',
-        color: '#fff',
-        padding: '5px 10px',
-        borderRadius: '5px',
+      fontStyle: 'italic',
+      color: '#666',
+      textAlign: 'center',
+      margin: '20px 0',
+      color: '#3ca5dc'
     },
     section: {
-        marginBottom: '20px',
+      marginBottom: '20px',
     },
     sectionHeader: {
-        marginBottom: '10px',
-        color: '#333',
-    },
-    slider: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    rangeInput: {
-        width: '100%',
-        margin: '0 10px',
+      marginBottom: '10px',
+      color: '#e0f7fa',
+      textAlign: 'center'
     },
     listItem: {
-        backgroundColor: '#e0f7fa',
-        padding: '10px',
-        borderRadius: '5px',
-        marginBottom: '5px',
+      backgroundColor: '#e0f7fa',
+      padding: '1px',
+      marginLeft: -30,
+      borderRadius: '5px',
+      marginBottom: '10px',
+      textAlign: "center"
     },
-};
+    iconButton: {
+      cursor: 'pointer'
+    }
+  };
 
   return (
-    <div>
 
-    
-   
-    <section>
-      <div style={styles.profileContainer}>
-            <div style={styles.leftColumn}>
-                <div style={styles.imageContainer}>
-                    <img src="https://via.placeholder.com/150" alt="Michael" style={styles.image} />
-                </div>
-                <h2 style={styles.header}>Michael</h2>
-                <h3 style={styles.header}>Angel Investor</h3>
-                <blockquote style={styles.blockquote}>
-                    I am looking for visionary ventures with innovation, scalability, and market disruption. I am passionate about empowering transformative ideas, shaping the future of technology.
-                </blockquote>
-                <div style={styles.personalInfo}>
-                    <p><strong>Age:</strong> 43</p>
-                    <p><strong>Status:</strong> Married</p>
-                    <p><strong>Location:</strong> Toronto</p>
-                    <p><strong>Occupation:</strong> Investor</p>
-                </div>
-                <div style={styles.traits}>
-                    <span style={styles.traitItem}>Organised</span>
-                    <span style={styles.traitItem}>Practical</span>
-                    <span style={styles.traitItem}>Punctual</span>
-                    <span style={styles.traitItem}>Hardworking</span>
-                </div>
-                 <section className="tokens-earned" style={tokensEarnedStyle}>
-      <h2 style={tokensEarnedTitleStyle}>Tokens Earned</h2>
-      <div style={tokenInfoStyle}>
-        <p style={tokensEarnedTextStyle}>You have earned {earnedTokens} tokens out of {totalTokens}.</p>
-        <ProgressBar now={(earnedTokens / totalTokens) * 100} label={`${(earnedTokens / totalTokens) * 100}%`} style={progressBarStyle} />
-      </div>
-      <div style={buttonContainerStyle}>
-        <Button variant="outline-primary" style={actionButtonStyle}>Claim Rewards</Button>
-        <Button variant="outline-secondary" style={actionButtonStyle}>View Transactions</Button>
-        <Button variant="outline-success" style={actionButtonStyle} onClick={connectWallet}>Connect MetaMask</Button>
-      </div>
-    </section>
-            </div>
-            <div style={styles.centerColumn}>
-                <div style={styles.section}>
-                    <h3 style={styles.sectionHeader}>About</h3>
-                    <p>
-                        Michael is a seasoned angel investor with a wealth of experience in finance and entrepreneurship. With a diverse portfolio spanning technology startups, biotech firms, and social enterprises, he is renowned for his keen eye for promising ventures and his passion for supporting innovation. Michael actively seeks investment opportunities in high-growth sectors such as blockchain, artificial intelligence, and clean energy, with a focus on projects with strong potential for scalability and market impact. Michael is dedicated to empowering entrepreneurs and driving transformative ideas in technology and beyond with his expertise.
-                    </p>
-                </div>
-                <div style={styles.section}>
-                    <h3 style={styles.sectionHeader}>Goals</h3>
-                    <ul>
-                        <li style={styles.listItem}>Discover high-potential ventures</li>
-                        <li style={styles.listItem}>Back scalable, impactful projects</li>
-                        <li style={styles.listItem}>Foster transparent partnerships</li>
-                        <li style={styles.listItem}>Generate sustainable returns with positive impact</li>
-                        <li style={styles.listItem}>Support promising ventures for long-term success through mentorship and strategic guidance</li>
-                    </ul>
-                </div>
-                <div style={styles.section}>
-                    <h3 style={styles.sectionHeader}>Personality</h3>
-                    <div style={styles.slider}>
-                        <label>Introvert</label>
-                        <input type="range" min="1" max="10" value="8" readOnly style={styles.rangeInput} />
-                        <label>Extrovert</label>
-                    </div>
-                    <div style={styles.slider}>
-                        <label>Analytical</label>
-                        <input type="range" min="1" max="10" value="3" readOnly style={styles.rangeInput} />
-                        <label>Creative</label>
-                    </div>
-                    <div style={styles.slider}>
-                        <label>Loyal</label>
-                        <input type="range" min="1" max="10" value="5" readOnly style={styles.rangeInput} />
-                        <label>Self First</label>
-                    </div>
-                    <div style={styles.slider}>
-                        <label>Active</label>
-                        <input type="range" min="1" max="10" value="2" readOnly style={styles.rangeInput} />
-                        <label>Passive</label>
-                    </div>
-                </div>
-               
-            </div>
-            <div style={styles.rightColumn}>
-            <div style={styles.section}>
-                    <h3 style={styles.sectionHeader}>Frustration</h3>
-                    <ul>
-                        <li style={styles.listItem}>Limited access to high-quality investment opportunities in desired sectors</li>
-                        <li style={styles.listItem}>Difficulty in finding transparent and trustworthy entrepreneurs and startups</li>
-                        <li style={styles.listItem}>Challenges in identifying ventures with both high scalability and meaningful societal impact</li>
-                    </ul>
-                </div>
-                <div style={styles.section}>
-                    <h3 style={styles.sectionHeader}>Motivations</h3>
-                    <ul>
-                        <li style={styles.listItem}>Innovation</li>
-                        <li style={styles.listItem}>Desire for Impact</li>
-                        <li style={styles.listItem}>Growth</li>
-                        <li style={styles.listItem}>Empowerment</li>
-                    </ul>
-                </div>
-                <div style={styles.section}>
-                    <h3 style={styles.sectionHeader}>Brands</h3>
-                    <p>Y Combinator, Founders Fund, Techstars, Andreessen Horowitz, Bessemer Venture Partners500 Startups</p>
-                </div>
-            </div>
+    <div style={styles.profileContainer}>
+      <div style={styles.leftColumn}>
+        <button onClick={isEditing ? handleSaveClick : handleEditClick}>
+          <FontAwesomeIcon icon={isEditing ? faSave : faEdit} style={styles.iconButton} />
+        </button>
+        <div style={styles.imageContainer}>
+          <img src={profile.imageSrc} alt={profile.name} style={styles.image} />
+          {isEditing && (
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              style={{ margin: 20 }}
+            />
+          )}
         </div>
-    </section>
+        {isEditing ? (
+          <input
+            type="text"
+            name="name"
+            value={profile.name}
+            onChange={handleChange}
+            style={{ width: '100%', marginBottom: 10 }}
+          />
+        ) : (
+          <h2 style={styles.header}>{profile.name}</h2>
+        )}
+        {isEditing ? (
+          <textarea
+            name="quote"
+            value={profile.quote}
+            onChange={handleChange}
+            style={{ width: '100%', height: '150px' }}
+          />
+        ) : (
+          <blockquote style={styles.blockquote}>
+            {profile.quote}
+          </blockquote>
+        )}
+
+        <div style={styles.section}>
+          <h3 style={styles.sectionHeader}>Ways to Earn</h3>
+          <ul>
+            <li style={styles.listItem}>Limited access to high-quality investment opportunities in desired sectors</li>
+            <li style={styles.listItem}>Difficulty in finding transparent and trustworthy entrepreneurs and startups</li>
+            <li style={styles.listItem}>Challenges in identifying ventures with both high scalability and meaningful societal impact</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style={{ width: '70%', margin: 20 }}>
+
+        <div style={styles.topRightColumn}>
+
+          <section className="tokens-earned" style={tokensEarnedStyle}>
+            <h2 style={tokensEarnedTitleStyle}>Tokens Earned</h2>
+            <div style={tokenInfoStyle}>
+              <p style={tokensEarnedTextStyle}>You have earned {earnedTokens} tokens out of {totalTokens}.</p>
+              <ProgressBar now={(earnedTokens / totalTokens) * 100} label={`${(earnedTokens / totalTokens) * 100}%`} style={progressBarStyle} />
+            </div>
+            <div style={buttonContainerStyle}>
+              <Button variant="outline-primary" style={actionButtonStyle}>Claim Rewards</Button>
+              <Button variant="outline-secondary" style={actionButtonStyle}>View Transactions</Button>
+              <Button variant="outline-success" style={actionButtonStyle} onClick={connectWallet}>Connect MetaMask</Button>
+            </div>
+          </section>
+          <section className="tokens-earned" style={tokensEarnedStyle}>
+            <h2 style={tokensEarnedTitleStyle}>NFT Earned</h2>
+            <div style={tokenInfoStyle}>
+              <p style={tokensEarnedTextStyle}>You have earned {earnedTokens} tokens out of {totalTokens}.</p>
+              <ProgressBar now={(earnedTokens / totalTokens) * 100} label={`${(earnedTokens / totalTokens) * 100}%`} style={progressBarStyle} />
+            </div>
+            <div style={buttonContainerStyle}>
+              <Button variant="outline-primary" style={actionButtonStyle}>Claim Rewards</Button>
+              <Button variant="outline-secondary" style={actionButtonStyle}>View Transactions</Button>
+              <Button variant="outline-success" style={actionButtonStyle} onClick={connectWallet}>Connect MetaMask</Button>
+            </div>
+          </section>
+        </div>
+
+        <div style={styles.bottomRightColumn}>
+          <h3 style={styles.sectionHeader}>Contribute to Community</h3>
+          <textarea
+            name="blog"
+            placeholder="Write your blog here..."
+            value={profile.blog}
+            onChange={handleChange}
+            style={{ width: '100%', height: '50%' }}
+          />
+          <button style={{ marginTop: '20px' , backgroundColor:"#3ca5dc", borderRadius:20, color:'white', padding:8, marginRight:20}}>Save Blog</button>
+          <button style={{ marginTop: '20px' , backgroundColor:"#3ca5dc", borderRadius:20, color:'white', padding:8}}>Your Blogs</button>
+        </div>
+
+
+      </div>
     </div>
 
-    
+
+
+
   );
 };
 
@@ -384,116 +414,121 @@ const BookAppointmentSection = () => {
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
   };
-  
+
   const handleBackClick = () => {
     setSelectedCenter(null);
   };
 
   return (
     <section style={sectionStyle}>
-    <div style={formContainerStyle}>
-      <Form onSubmit={handleSubmit} style={formStyle}>
-        <Form.Group controlId="search">
-          <Form.Label style={{ color: "#3ca5dc", fontWeight: "bold" }}>Search Donation Center</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter donation center name or location"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            style={{ color: "#3ca5dc" }}
-          />
-        </Form.Group>
+      <div style={formContainerStyle}>
+        <Form onSubmit={handleSubmit} style={formStyle}>
+          <Form.Group controlId="search">
+            <Form.Label style={{ color: "#3ca5dc", fontWeight: "bold" }}>Search Donation Center</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter donation center name or location"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              style={{ color: "#3ca5dc", marginBottom: 20 }}
+            />
+          </Form.Group>
 
-        {!selectedCenter && (
-          <Row>
-            {bloodDonationCenters
-              .filter((center) =>
-                center.name.toLowerCase().includes(searchTerm.toLowerCase())
-              )
-              .map((center) => (
-                <Col key={center.name} xs={12} md={4} style={{ marginBottom: '20px' }}>
-                  <Card onClick={() => handleCenterSelect(center)}>
-                    <Card.Body>
-                      <Card.Title style={{ color: "#3ca5dc" }}>{center.name}</Card.Title>
-                      <Card.Text style={{ color: "#3ca5dc" }}>{center.address}</Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              ))}
-          </Row>
-        )}
-
-        {selectedCenter && (
-          <Card style={{ marginBottom: '20px' }}>
-            <Card.Body>
-              <Card.Title style={{ color: "#3ca5dc" }}>{selectedCenter.name}</Card.Title>
-              <Card.Text style={{ color: "#3ca5dc" }}>{selectedCenter.address}</Card.Text>
-              <Card.Text style={{ color: "#3ca5dc" }}>Phone: {selectedCenter.phone}</Card.Text>
-              <Card.Text style={{ color: "#3ca5dc" }}>Hours:</Card.Text>
-              <ul>
-                {Object.keys(selectedCenter.hours).map((day) => (
-                  <li key={day} style={{ color: "#3ca5dc" }}>
-                    {day.charAt(0).toUpperCase() + day.slice(1)}: {selectedCenter.hours[day]}
-                  </li>
+          {!selectedCenter && (
+            <Row>
+              {bloodDonationCenters
+                .filter((center) =>
+                  center.name.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .map((center) => (
+                  <Col key={center.name} xs={12} md={4} style={{ marginBottom: '20px' }}>
+                    <Card onClick={() => handleCenterSelect(center)} style={{ height: 200, width: '100%', backgroundColor: "#192841" }}>
+                      <Card.Body>
+                        <Card.Title style={{ color: "#3ca5dc" }}>{center.name}</Card.Title>
+                        <Card.Text style={{ color: "#3ca5dc" }}>{center.address}</Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </Col>
                 ))}
-              </ul>
+            </Row>
+          )}
 
-              <Form.Group controlId="date" style={{ marginTop: 20 }}>
-                <Form.Label style={{ color: "#3ca5dc", fontWeight: "bold" }}>Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  required
-                  style={{ color: "#3ca5dc" }}
-                />
-              </Form.Group>
+          {selectedCenter && (
+            <Card style={{ marginBottom: '20px', backgroundColor: "#192841" }}>
+              <Card.Body >
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' }}>
+                  <div style={{ width: '100%' }}>
+                    <Card.Title style={{ color: "#3ca5dc" }}>{selectedCenter.name}</Card.Title>
+                    <Card.Text style={{ color: "#3ca5dc" }}>{selectedCenter.address}</Card.Text>
+                    <Card.Text style={{ color: "#3ca5dc" }}>Phone: {selectedCenter.phone}</Card.Text>
+                    <Card.Text style={{ color: "#3ca5dc" }}>Hours:</Card.Text>
+                    <ul>
+                      {Object.keys(selectedCenter.hours).map((day) => (
+                        <li key={day} style={{ color: "#3ca5dc" }}>
+                          {day.charAt(0).toUpperCase() + day.slice(1)}: {selectedCenter.hours[day]}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div style={{ width: '100%' }}>
+                    <Form.Group controlId="date" style={{ marginTop: 20 }}>
+                      <Form.Label style={{ color: "#3ca5dc", fontWeight: "bold" }}>Date</Form.Label>
+                      <Form.Control
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        required
+                        style={{ color: "#3ca5dc" }}
+                      />
+                    </Form.Group>
 
-              <Form.Group controlId="time" style={{ marginTop: 20 }}>
-                <Form.Label style={{ color: "#3ca5dc", fontWeight: "bold" }}>Time</Form.Label>
-                <Form.Control
-                  type="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  required
-                  style={{ color: "#3ca5dc" }}
-                />
-              </Form.Group>
+                    <Form.Group controlId="time" style={{ marginTop: 20 }}>
+                      <Form.Label style={{ color: "#3ca5dc", fontWeight: "bold" }}>Time</Form.Label>
+                      <Form.Control
+                        type="time"
+                        value={time}
+                        onChange={(e) => setTime(e.target.value)}
+                        required
+                        style={{ color: "#3ca5dc" }}
+                        min="09:00"
+                        max="17:00"
+                      />
+                    </Form.Group>
+                  </div>
+                </div>
+                <Button variant="primary" type="submit" style={submitButtonStyle}>
+                  Book Appointment
+                </Button>
+                <Button variant="secondary" onClick={handleBackClick} style={submitButtonStyle}>
+                  Back
+                </Button>
+              </Card.Body>
+            </Card>
+          )}
 
-              <Button variant="primary" type="submit" style={submitButtonStyle}>
-                Book Appointment
-              </Button>
-              <Button variant="secondary" onClick={handleBackClick}>
-                    Back
-                  </Button>
-            </Card.Body>
-          </Card>
-        )}
+        </Form>
 
-      </Form>
-
-      <Modal show={showSuccessModal} onHide={handleCloseSuccessModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Appointment Booked Successfully</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Your appointment has been booked successfully!</Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={handleCloseSuccessModal}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
-  </section>
+        <Modal show={showSuccessModal} onHide={handleCloseSuccessModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Appointment Booked Successfully</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Your appointment has been booked successfully!</Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary" onClick={handleCloseSuccessModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
+    </section>
   );
 };
 
-
 const MyAppointmentsSection = ({ appointments }) => {
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: 'AIzaSyAAFI4ON-NQGEu4KcpoIVrPaqkHjlqOE-8' 
+    googleMapsApiKey: 'AIzaSyAAFI4ON-NQGEu4KcpoIVrPaqkHjlqOE-8'
   });
-  
+
   useEffect(() => {
     if (appointments.length > 0) {
       appointments.forEach(appointment => {
@@ -535,14 +570,14 @@ const MyAppointmentsSection = ({ appointments }) => {
 export default UserDashboard;
 
 const sectionStyle = {
-  marginTop:40,
-  marginLeft:-100,
+  marginTop: 40,
+  marginLeft: -100,
   padding: '20px',
-  backgroundColor:"white",
+  backgroundColor: "white",
   borderRadius: '8px',
   textAlign: 'center',
   width: '100%',
-  height:'80%',
+  height: '80%',
 };
 
 const sectionStyle1 = {
@@ -571,16 +606,17 @@ const sectionTitleStyle = {
 
 const formStyle = {
   textAlign: 'left',
-  width:'100%',
-  marginRight:20,
+  width: '100%',
+  marginRight: 20,
 };
 
 const submitButtonStyle = {
   marginTop: '20px',
+  marginRight: 20,
   width: '3 0%',
   fontFamily: 'Verdana, Geneva, sans-serif',
-  backgroundColor:"#3ca5dc",
-  marginBottom:30
+  backgroundColor: "#3ca5dc",
+  marginBottom: 30
 };
 
 const listStyle = {
@@ -589,7 +625,7 @@ const listStyle = {
   margin: 0,
   overflowY: 'auto',
   borderRadius: '4px',
-  height:300
+  height: 300
 };
 
 const listStyle1 = {
@@ -608,7 +644,7 @@ const listItemStyle = {
   margin: '10px 0',
   borderRadius: '5px',
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-  color:'white'
+  color: 'white'
 };
 
 
@@ -629,14 +665,9 @@ const brandStyle = {
 const logoStyle = {
   width: '14%',
   height: '14%',
-  marginLeft: '10px'
+  marginLeft: '-5px'
 };
 
-const responsiveLogoStyle = {
-  width: '10%',
-  height: '10%',
-  marginLeft: '10px'
-};
 
 const navLinkStyle = {
   color: '#3ca5dc',
@@ -664,17 +695,19 @@ const iconStyle = {
 };
 
 const tokensEarnedStyle = {
+  marginRight: 10,
   padding: '20px',
-  backgroundColor: '#f9f9f9',
+  backgroundColor: '#192841',
   borderRadius: '8px',
   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
   textAlign: 'center',
   margin: '20px auto',
-  width: '80%',
+  width: '50%',
+
 };
 
 const tokensEarnedTitleStyle = {
-  color: '#192841',
+  color: 'white',
   fontFamily: 'Verdana, Geneva, sans-serif',
   fontSize: '1.5rem',
   fontWeight: 'bold',

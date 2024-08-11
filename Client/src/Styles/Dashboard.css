@@ -13,13 +13,11 @@
     align-items: center;
     justify-content: space-between;
     color: white;
-    padding: 16px;
+    padding: 10px;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
     z-index: 1000;
     transition: left 0.3s ease, width 0.3s ease;
+    box-shadow: '0 4px 6px rgba(0, 0, 0, 1)';
   }
   
   .drawer-open .app-bar {
@@ -111,7 +109,7 @@
   }
   
   .drawer-open .main-content {
-    margin-left: 240px;
+    margin-left: 250px;
   }
   
   

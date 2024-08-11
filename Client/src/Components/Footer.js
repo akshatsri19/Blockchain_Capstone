@@ -3,9 +3,35 @@ import facebookIcon from "../Assets/Facebook.png";
 import twitterIcon from "../Assets/Twitter.png";
 import instaIcon from "../Assets/Instagram.jpeg";
 import linkedIcon from "../Assets/Linkedin.png";
+import { db } from "../Firebase/FirebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
 
 const Footer = () => {
   const [hoveredIcon, setHoveredIcon] = useState(null);
+  const [name, setName] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async () => {
+    try {
+      await addDoc(collection(db, "feedback"), {
+        name,
+        mobile,
+        email,
+        message,
+        timestamp: new Date(),
+      });
+      alert("Feedback submitted successfully!");
+      setName("");
+      setMobile("");
+      setEmail("");
+      setMessage("");
+    } catch (error) {
+      console.error("Error submitting feedback: ", error);
+      alert("There was an error submitting your feedback. Please try again.");
+    }
+  };
 
   return (
     <footer style={footerStyle}>
@@ -83,11 +109,41 @@ const Footer = () => {
               <h4 style={{ color: "black",fontFamily: 'Verdana, Geneva, sans-serif' }}>Feedback</h4>
             </div>
             <div className="form-body">
-              <input type="text" placeholder="Enter Name" className="form-control" style={{ marginBottom: 10,fontFamily: 'Verdana, Geneva, sans-serif' }} />
-              <input type="text" placeholder="Enter Mobile no" className="form-control" style={{ marginBottom: 10,fontFamily: 'Verdana, Geneva, sans-serif' }} />
-              <input type="text" placeholder="Enter Email Address" className="form-control" style={{ marginBottom: 10,fontFamily: 'Verdana, Geneva, sans-serif' }} />
-              <input type="text" placeholder="Your Message" className="form-control" style={{ marginBottom: 10,fontFamily: 'Verdana, Geneva, sans-serif' }} />
-              <button className="btn btn-sm btn-primary w-100" style={{ backgroundColor: "#3ca5dc", borderColor: "#3ca5dc", marginTop: 10,fontFamily: 'Verdana, Geneva, sans-serif' }}>Send Request</button>
+            <input 
+                type="text" 
+                placeholder="Enter Name" 
+                className="form-control" 
+                style={{ marginBottom: 10,fontFamily: 'Verdana, Geneva, sans-serif' }} 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <input 
+                type="text" 
+                placeholder="Enter Mobile no" 
+                className="form-control" 
+                style={{ marginBottom: 10,fontFamily: 'Verdana, Geneva, sans-serif' }} 
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value)}
+              />
+              <input 
+                type="text" 
+                placeholder="Enter Email Address" 
+                className="form-control" 
+                style={{ marginBottom: 10,fontFamily: 'Verdana, Geneva, sans-serif' }} 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <input 
+                type="text" 
+                placeholder="Your Message" 
+                className="form-control" 
+                style={{ marginBottom: 10,fontFamily: 'Verdana, Geneva, sans-serif' }} 
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+              <button className="btn btn-sm btn-primary w-100" 
+              style={{ backgroundColor: "#3ca5dc", borderColor: "#3ca5dc", marginTop: 10,
+              fontFamily: 'Verdana, Geneva, sans-serif' }} onClick={handleSubmit}>Submit</button>
             </div>
           </div>
         </div>

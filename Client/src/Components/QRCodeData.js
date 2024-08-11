@@ -34,7 +34,7 @@ const QRCodeData = () => {
       <p><strong>Donation Center:</strong> {appointment.donationCenter}</p>
       <p><strong>Date:</strong> {appointment.date}</p>
       <p><strong>Time:</strong> {appointment.time}</p>
-      
+      <button>Verify</button>
     </div>
   );
 };

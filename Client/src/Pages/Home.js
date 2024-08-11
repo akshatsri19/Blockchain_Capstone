@@ -285,7 +285,7 @@ const Home = () => {
 
       <div style={containerStyle}>
       <div style={contentStyle}>
-        <h1 style={{fontFamily: 'Verdana, Geneva, sans-serif', marginBottom:30}}>Donation Process</h1>
+        <h1 style={{fontFamily: 'Verdana, Geneva, sans-serif', marginBottom:30, fontWeight:'bold'}}>Donation Process</h1>
         <div style={flexContainerStyle}>
           <div style={cardStyle}>
             <img src={g1} alt="Registration" style={imgStyle} />
@@ -312,7 +312,7 @@ const Home = () => {
     </div>
 
     <div style={blogSectionStyle}>
-      <h1 style={{fontFamily: 'Verdana, Geneva, sans-serif', marginTop:-20,marginBottom:60}}>Latest in Community</h1>
+      <h1 style={{fontFamily: 'Verdana, Geneva, sans-serif', marginTop:-20,marginBottom:60, fontWeight:'bold'}}>Latest in Community</h1>
       <div style={blogPostsContainerStyle}>
         <div style={{margin:10, flex: '1 1 300px'}}>
           <div className="blog-post" style={blogPostStyle}>
