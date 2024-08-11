@@ -44,7 +44,14 @@ class NFTMintingService {
         try {
             const tx = await nftContract.mintNFT(recipient, tokenURI);
             await tx.wait();
-            console.log("NFT minted with token ID:", tx.events[0].args.tokenId.toString());
+
+            // to check if the transaction receipt contains events
+            if (tx.events && tx.events.length > 0) {
+                console.log("NFT minted with token ID:", tx.events[0].args.tokenId.toString());
+            } else {
+                console.log("NFT minted, but no event logs found in the transaction receipt.");
+            }
+
             return { success: true, txHash: tx.hash };
         } catch (error) {
             console.error("Minting NFT failed:", error);
