@@ -1,10 +1,10 @@
 async function main() {
     // deploy Utility Token contract
-    const tokenContractFactory = await ethers.getContractFactory('TrustTokenWithRewardPool');
-    console.log("Deploying TrustTokenWithRewardPool...");
-    const trustTokenWithRewardPool = await tokenContractFactory.deploy();
+    const tokenContractFactory = await ethers.getContractFactory('TrustTokenWithDynamicTasks');
+    console.log("Deploying TrustTokenWithDynamicTasks...");
+    const trustTokenWithDynamicTasks = await tokenContractFactory.deploy();
     // target holds the contarct address for ethers version 6 or higher
-    console.log("TrustTokenWithRewardPool deployed to: ", trustTokenWithRewardPool.target); 
+    console.log("trustTokenWithDynamicTasks deployed to: ", trustTokenWithDynamicTasks.target); 
 
     // deploy NFT contract
     const nftContractFactory = await ethers.getContractFactory('TrustNFT');

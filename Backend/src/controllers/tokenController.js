@@ -21,13 +21,48 @@ const TokenController = {
     }
   },
 
-  async reward(req, res) {
-    const { recipient, amount } = req.body;
+  async claimReward(req, res) {
+    const { hashedKycId, taskId } = req.body;
     try {
-      const result = await tokenService.transferReward(recipient, amount);
-      res.json({ message: "Reward transfer successful", tx: result.tx });
+      const result = await tokenService.claimReward(hashedKycId, taskId);
+      res.json({ message: "Reward claim successful", tx: result.tx });
     } catch (error) {
-      res.status(500).json({ message: "Reward transfer failed", error });
+      res.status(500).json({ message: "Reward claim failed", error });
+    }
+  },
+
+  async addOrUpdateTask(req, res) {
+    const { taskId, rewardAmount, isActive } = req.body;
+    try {
+      const result = await tokenService.addOrUpdateTask(taskId, rewardAmount, isActive);
+      res.json({ message: "Task added/updated successfully", tx: result.tx });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to add/update task", error });
+    }
+  },
+
+  async getTask(req, res) {
+    const { taskId } = req.params;
+    try {
+      const task = await tokenService.getTask(taskId);
+      res.json({ task });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch task", error });
+    }
+  },
+
+  async getActiveTasks(req, res) {
+    try {
+      const activeTasks = [];
+      for (let i = 0; i < 10; i++) { // Assuming task IDs are from 0 to 9
+        const task = await tokenService.getTask(i);
+        if (task.isActive) {
+          activeTasks.push({ taskId: i, ...task });
+        }
+      }
+      res.json({ activeTasks });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch active tasks", error });
     }
   },
 

@@ -6,10 +6,13 @@ const AdminDashboard = () => {
   const [amount, setAmount] = useState("");
   const [recipients, setRecipients] = useState("");
   const [amounts, setAmounts] = useState("");
-  const [rewardRecipient, setRewardRecipient] = useState("");
   const [rewardAmount, setRewardAmount] = useState("");
   const [rewardPoolBalance, setRewardPoolBalance] = useState("");
   const [loadingBalance, setLoadingBalance] = useState(true);
+  const [taskId, setTaskId] = useState("");
+  const [isActive, setIsActive] = useState(true);
+  const [taskDetails, setTaskDetails] = useState(null);
+  const [notifications, setNotifications] = useState([]);
 
   const handleSingleMint = async () => {
     const response = await fetch("http://localhost:5001/api/mint", {
@@ -40,18 +43,27 @@ const AdminDashboard = () => {
     console.log(data.message);
   };
 
-  const handleTransferReward = async () => {
-    const response = await fetch("http://localhost:5001/api/reward", {
+  const handleAddOrUpdateTask = async () => {
+    const response = await fetch("http://localhost:5001/api/task", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ recipient: rewardRecipient, amount: rewardAmount })
+      body: JSON.stringify({ taskId, rewardAmount, isActive })
     });
 
     const data = await response.json();
     console.log(data.message);
-    fetchRewardPoolBalance();
+  };
+
+  const fetchTaskDetails = async () => {
+    try {
+      const response = await fetch(`http://localhost:5001/api/task/${taskId}`);
+      const data = await response.json();
+      setTaskDetails(data.task);
+    } catch (error) {
+      console.error("Failed to fetch task details", error);
+    }
   };
 
   const fetchRewardPoolBalance = async () => {
@@ -66,8 +78,37 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchNotifications = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/api/nft/notifications");
+      const data = await response.json();
+      setNotifications(data);
+    } catch (error) {
+      console.error("Failed to fetch notifications", error);
+    }
+  };
+
+  const handleMintNFT = async (notificationId) => {
+    try {
+      const response = await fetch("http://localhost:5001/api/nft/mint", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ notificationId })
+      });
+
+      const data = await response.json();
+      console.log(data.message);
+      fetchNotifications(); // Refresh notifications after minting
+    } catch (error) {
+      console.error("Failed to mint NFT", error);
+    }
+  };
+
   useEffect(() => {
     fetchRewardPoolBalance();
+    fetchNotifications();
   }, []);
 
   return (
@@ -81,6 +122,18 @@ const AdminDashboard = () => {
                 ) : (
                     <p>{rewardPoolBalance} TRUST</p>
                 )}
+            </div>
+
+            <div className="card">
+                <h2>Pending NFT Claims</h2>
+                <ul>
+                  {notifications.map(notification => (
+                    <li key={notification.id}>
+                      <p>Recipient: {notification.recipient}</p>
+                      <button onClick={() => handleMintNFT(notification.id)}>Mint NFT</button>
+                    </li>
+                  ))}
+                </ul>
             </div>
 
             <div className="card">
@@ -116,12 +169,12 @@ const AdminDashboard = () => {
             </div>
 
             <div className="card">
-                <h2>Transfer Tokens from Reward Pool</h2>
+                <h2>Add or Update Task</h2>
                 <input
                 type="text"
-                placeholder="Reward Recipient Address"
-                value={rewardRecipient}
-                onChange={(e) => setRewardRecipient(e.target.value)}
+                placeholder="Task ID"
+                value={taskId}
+                onChange={(e) => setTaskId(e.target.value)}
                 />
                 <input
                 type="text"
@@ -129,7 +182,32 @@ const AdminDashboard = () => {
                 value={rewardAmount}
                 onChange={(e) => setRewardAmount(e.target.value)}
                 />
-                <button onClick={handleTransferReward}>Transfer Tokens</button>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={isActive}
+                    onChange={(e) => setIsActive(e.target.checked)}
+                  />
+                  Is Active
+                </label>
+                <button onClick={handleAddOrUpdateTask}>Add/Update Task</button>
+            </div>
+
+            <div className="card">
+                <h2>Get Task Details</h2>
+                <input
+                type="text"
+                placeholder="Task ID"
+                value={taskId}
+                onChange={(e) => setTaskId(e.target.value)}
+                />
+                <button onClick={fetchTaskDetails}>Fetch Task Details</button>
+                {taskDetails && (
+                    <div>
+                        <p>Reward Amount: {taskDetails.rewardAmount} TRUST</p>
+                        <p>Is Active: {taskDetails.isActive ? "Yes" : "No"}</p>
+                    </div>
+                )}
             </div>
         </div>
     </div>
