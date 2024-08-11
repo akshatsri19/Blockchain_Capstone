@@ -5,6 +5,7 @@ class NFTController {
   async claimNFT(req, res) {
     const { userId, recipient, tokenURI } = req.body;
     try {
+      // Donation record is created in the database
       const notification = {
         userId,
         recipient,
@@ -13,9 +14,12 @@ class NFTController {
         createdAt: new Date(),
       };
       const notificationId = await notificationService.addNotification(notification);
-      res.json({ message: "NFT claim requested", notificationId });
+
+       // a success message for nft request
+      res.json({ success: true, message: "Your request is in progress. You will receive your NFT upon successful verification.", notificationId });
     } catch (error) {
-      res.status(500).json({ message: "Failed to request NFT claim", error });
+      console.error("Error during NFT claim request:", error);
+      res.status(500).json({ success: false, message: "Failed to request NFT claim. Please try again later.", error });
     }
   }
 
