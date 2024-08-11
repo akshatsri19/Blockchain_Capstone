@@ -100,7 +100,7 @@ const AdminDashboard = () => {
 
       const data = await response.json();
       console.log(data.message);
-      fetchNotifications(); // Refresh notifications after minting
+      fetchNotifications();
     } catch (error) {
       console.error("Failed to mint NFT", error);
     }

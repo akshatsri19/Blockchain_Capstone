@@ -32,7 +32,9 @@ const UserDbTest = () => {
         setClaimInProgress(true);
         // Remove the claimed milestone from the showClaimedButton array
         setShowClaimedButton(prev => prev.filter(milestone => milestone !== donationCount));
-        // Optionally, update state to hide the claim button or show the "in progress" message
+
+        // After claiming, fetch the updated NFT data
+        fetchNFTData();
       } else {
         setMessage('NFT claim request failed, please try again later!');
       }
@@ -79,7 +81,6 @@ const UserDbTest = () => {
 
   useEffect(() => {
     fetchNFTData();
-    fetchClaimStatus();
   }, []);
 
   const shouldShowClaimButton = () => {

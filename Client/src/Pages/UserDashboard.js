@@ -13,15 +13,17 @@ import { Card, Row, Col } from 'react-bootstrap';
 import logo1 from "../Assets/Logo1.jpg"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
+import testImage from '../Assets/g1.jpg';
 
-
-const localIpAddress = '192.168.2.20';
+const localIpAddress = '172.20.10.4';
 
 const UserDashboard = () => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [activeSection, setActiveSection] = useState('dashboard');
   const [appointments, setAppointments] = useState([]);
+  const [account, setAccount] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,13 +66,13 @@ const UserDashboard = () => {
   const renderSection = () => {
     switch (activeSection) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard account={account} setAccount={setAccount} />;
       case 'book-appointment':
         return <BookAppointmentSection />;
       case 'my-appointments':
-        return <MyAppointmentsSection appointments={appointments} />;
+        return <MyAppointmentsSection appointments={appointments} account={account} />;
       default:
-        return <Dashboard />;
+        return <Dashboard account={account} setAccount={setAccount} />;
     }
   };
 
@@ -131,11 +133,13 @@ const UserDashboard = () => {
   );
 }
 
-const Dashboard = () => {
+const Dashboard = ({ account, setAccount }) => {
   const totalTokens = 5000;
   const earnedTokens = 1234;
-
   const [isEditing, setIsEditing] = useState(false);
+  const [nfts, setNfts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   const [profile, setProfile] = useState({
     imageSrc: 'https://via.placeholder.com/150',
@@ -177,15 +181,40 @@ const Dashboard = () => {
 
 
   const connectWallet = async () => {
+
     if (window.ethereum) {
       try {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        alert('MetaMask wallet connected successfully!');
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setAccount(accounts[0]);
+        alert(`MetaMask wallet connected successfully! Account: ${account}`);
       } catch (error) {
         console.error('Error connecting MetaMask', error);
       }
     } else {
       alert('MetaMask is not installed. Please install it to connect your wallet.');
+    }
+
+    setLoading(true);
+    
+    try {
+        const response = await axios.get(`http://localhost:5001/api/nft/nfts/${account}`);
+        
+        const nftData = response.data;
+
+        console.log(`account ${response.data}`);
+
+        if (nftData.length === 0) {
+            setMessage('No NFTs found');
+        } else {
+          setNfts(nftData); // store all nfts in state
+        }
+        console.log(`NFT ${nfts.length}`);
+        
+    } catch (error) {
+      console.error('Failed to fetch NFT data:', error);
+      setMessage('Failed to fetch NFT data');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -203,7 +232,8 @@ const Dashboard = () => {
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
       textAlign: 'justify',
       margin: '20px auto',
-      color: '#3ca5dc'
+      color: '#3ca5dc',
+      width:'40%'
     },
     topRightColumn: {
       display: 'flex',
@@ -267,6 +297,10 @@ const Dashboard = () => {
     }
   };
 
+  // useEffect(() => {
+  //   fetchNFTData();
+  // }, []);
+
   return (
 
     <div style={styles.profileContainer}>
@@ -319,7 +353,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div style={{ width: '70%', margin: 20 }}>
+      <div style={{ width: '100%', margin: 20 }}>
 
         <div style={styles.topRightColumn}>
 
@@ -335,17 +369,29 @@ const Dashboard = () => {
               <Button variant="outline-success" style={actionButtonStyle} onClick={connectWallet}>Connect MetaMask</Button>
             </div>
           </section>
-          <section className="tokens-earned" style={tokensEarnedStyle}>
+          <section className="nfts-earned" style={tokensEarnedStyle}>
             <h2 style={tokensEarnedTitleStyle}>NFT Earned</h2>
-            <div style={tokenInfoStyle}>
-              <p style={tokensEarnedTextStyle}>You have earned {earnedTokens} tokens out of {totalTokens}.</p>
-              <ProgressBar now={(earnedTokens / totalTokens) * 100} label={`${(earnedTokens / totalTokens) * 100}%`} style={progressBarStyle} />
+            {loading ? (
+        <p>Loading your NFTs...</p>
+      ) : nfts.length > 0 ? (
+        <div>
+            <h2>Your NFTs</h2>
+            <div className="nft-card-container">
+            {nfts.map((nft, index) => (
+                <div key={index} className="nft-card">
+                <img src={testImage} alt="testImage" width="200" />
+                {/* <p>Name: {nft.metadata.name}</p> */}
+                {/* <p>Description: {nft.metadata.description}</p> */}
+                    <div className="nft-details">
+                        <p>Token ID: {nft.tokenId}</p>
+                    </div>
+                </div>
+            ))}
             </div>
-            <div style={buttonContainerStyle}>
-              <Button variant="outline-primary" style={actionButtonStyle}>Claim Rewards</Button>
-              <Button variant="outline-secondary" style={actionButtonStyle}>View Transactions</Button>
-              <Button variant="outline-success" style={actionButtonStyle} onClick={connectWallet}>Connect MetaMask</Button>
-            </div>
+        </div>
+      ) : (
+        <p>{message}</p>
+      )}
           </section>
         </div>
 
@@ -361,8 +407,6 @@ const Dashboard = () => {
           <button style={{ marginTop: '20px' , backgroundColor:"#3ca5dc", borderRadius:20, color:'white', padding:8, marginRight:20}}>Save Blog</button>
           <button style={{ marginTop: '20px' , backgroundColor:"#3ca5dc", borderRadius:20, color:'white', padding:8}}>Your Blogs</button>
         </div>
-
-
       </div>
     </div>
 
@@ -401,6 +445,7 @@ const BookAppointmentSection = () => {
           userId: user.uid,
           lat: selectedCenter.lat,
           lng: selectedCenter.long,
+          confirmation: false
         });
         setShowSuccessModal(true);
       } catch (error) {
@@ -524,22 +569,45 @@ const BookAppointmentSection = () => {
   );
 };
 
-const MyAppointmentsSection = ({ appointments }) => {
+const MyAppointmentsSection = ({ appointments, account }) => {
+
+  const [message, setMessage] = useState('');
+
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: 'AIzaSyAAFI4ON-NQGEu4KcpoIVrPaqkHjlqOE-8'
   });
 
-  useEffect(() => {
-    if (appointments.length > 0) {
-      appointments.forEach(appointment => {
-        console.log('Marker coordinates:', { lat: appointment.lat, lng: appointment.lng });
+  const handleClaimNFT = async () => {
+    try {
+      const tokenURI = "https://example.com/nft-metadata"; 
+      const response = await axios.post('http://localhost:5001/api/nft/claim', {
+        userId: "xb9LwCGT4tXLel6LSHSIR0Y648r1",
+        recipient: account,
+        tokenURI,
       });
+
+      if (response.data.success) {
+        setMessage('NFT claimed successfully!');
+        
+        // Remove the claimed milestone from the showClaimedButton array
+        // setShowClaimedButton(prev => prev.filter(milestone => milestone !== donationCount));
+
+        // After claiming, fetch the updated NFT data
+        // fetchNFTData();
+      } else {
+        setMessage('Failed to claim NFT');
+      }
+
+    } catch (error) {
+      setMessage('Failed to claim NFT');
+      console.error('Error claiming NFT:', error);
     }
-  }, [appointments]);
+  };
 
   return (
     <section style={sectionStyle1}>
       <h2 style={sectionTitleStyle}>My Appointments</h2>
+      <button onClick={() => window.location.reload()}>Refresh Appointments</button>
       <ul style={listStyle1}>
         {appointments.map(appointment => (
           <li key={appointment.id} style={listItemStyle}>
@@ -547,7 +615,12 @@ const MyAppointmentsSection = ({ appointments }) => {
             <p><strong>Donation Center:</strong> {appointment.donationCenter}</p>
             <p><strong>Date:</strong> {appointment.date}</p>
             <p><strong>Time:</strong> {appointment.time}</p>
-            <QRCode value={`http://${localIpAddress}:3000/qrcode/${appointment.id}`} size={128} />
+            {appointment.confirmation && (
+              <Button variant="outline-primary" style={actionButtonStyle} onClick={handleClaimNFT}>
+                Claim Rewards
+              </Button>
+            )}
+            <QRCode value={`http://${localIpAddress}:3000/qrcode/${appointment.id}?account=${encodeURIComponent(account)}`} size={128}/>
             {isLoaded && (
               <div style={{ height: '400px', marginTop: '20px' }}>
                 <GoogleMap
