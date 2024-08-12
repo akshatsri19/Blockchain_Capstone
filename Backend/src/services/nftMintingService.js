@@ -26,10 +26,10 @@ class NFTMintingService {
     async handleNFTMintedEvent(owner, tokenId) {
         try {
             console.log(`Handling NFT minted event. Storing data for user: ${owner}, Token ID: ${tokenId}`);
-            
+            const ownerLowercase = owner.toLowerCase();
             // Store the NFT data in Firestore
             await db.collection('nfts').doc(tokenId).set({
-                owner: owner,
+                owner: ownerLowercase,
                 tokenId: tokenId,
                 createdAt: admin.firestore.FieldValue.serverTimestamp()
           });
@@ -63,7 +63,7 @@ class NFTMintingService {
         try {
             // Query Firestore for NFTs owned by the recipient
             const nftSnapshot = await db.collection('nfts').where('owner', '==', recipientAddress).get();
-        
+            console.log(`Fetching NFTs for user and snapshot: ${nftSnapshot}, ${recipientAddress}`);
             if (nftSnapshot.empty) {
                 console.log(`No NFTs found for user: ${recipientAddress}`);
                 return [];
@@ -77,10 +77,9 @@ class NFTMintingService {
                 owner: nftData.owner,
                 });
             });
-    
+            console.log(nfts);
             console.log(`Fetched ${nfts.length} NFTs for user: ${recipientAddress}`);
             return nfts; // Return an array of NFTs owned by the user
-    
         } catch (error) {
             console.error('Failed to fetch NFTs from db:', error);
             throw error;

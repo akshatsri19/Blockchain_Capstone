@@ -60,6 +60,7 @@ class NFTController {
     const { recipientAddress } = req.params;
     try {
       const nftData = await nftMintingService.fetchNFT(recipientAddress);
+      console.log(`Recipient address getUserNFTs: ${recipientAddress}`);
       console.log("NFT data:", nftData);
       if (nftData && nftData.length > 0) {
         res.json(nftData);

@@ -13,7 +13,7 @@ const UserDbTest = () => {
   const [showClaimedButton, setShowClaimedButton] = useState([1, 10, 25, 50]); // State to manage claimable milestones
   const [claimInProgress, setClaimInProgress] = useState(false); // Track if a claim is in progress
 
-  const recipientAddress = "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc";
+  const USER_ADDRESS = process.env.REACT_APP_USER_ADDRESS;
    // Hardcoded donation count for testing purposes
    const donationCount = 1;
 
@@ -23,7 +23,7 @@ const UserDbTest = () => {
       const tokenURI = "https://example.com/nft-metadata"; // Generate this dynamically based on user criteria
       const response = await axios.post('http://localhost:5001/api/nft/claim', {
         userId: "xb9LwCGT4tXLel6LSHSIR0Y648r1",
-        recipient: "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+        recipient: `${USER_ADDRESS}`,
         tokenURI,
       });
 
@@ -49,7 +49,7 @@ const UserDbTest = () => {
   const fetchNFTData = async () => {
     setNftLoading(true);
     try {
-        const response = await axios.get(`http://localhost:5001/api/nft/nfts/${recipientAddress}`);
+        const response = await axios.get(`http://localhost:5001/api/nft/nfts/${USER_ADDRESS}`);
         const nftData = response.data;
 
         if (nftData.length === 0) {

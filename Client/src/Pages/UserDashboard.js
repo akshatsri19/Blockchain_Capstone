@@ -201,15 +201,11 @@ const Dashboard = ({ account, setAccount }) => {
         
         const nftData = response.data;
 
-        console.log(`account ${response.data}`);
-
         if (nftData.length === 0) {
             setMessage('No NFTs found');
         } else {
           setNfts(nftData); // store all nfts in state
-        }
-        console.log(`NFT ${nfts.length}`);
-        
+        }        
     } catch (error) {
       console.error('Failed to fetch NFT data:', error);
       setMessage('Failed to fetch NFT data');
@@ -375,7 +371,6 @@ const Dashboard = ({ account, setAccount }) => {
         <p>Loading your NFTs...</p>
       ) : nfts.length > 0 ? (
         <div>
-            <h2>Your NFTs</h2>
             <div className="nft-card-container">
             {nfts.map((nft, index) => (
                 <div key={index} className="nft-card">

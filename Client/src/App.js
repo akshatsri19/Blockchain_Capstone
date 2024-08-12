@@ -6,7 +6,7 @@ import FindBlood from './Pages/FindBlood';
 import RegisterUser from './Pages/RegisterUser';
 import Services from './Pages/Services';
 import Footer from './Components/Footer';
-import Minting from './Pages/Mintpage';
+// import Minting from './Pages/Mintpage';
 import UserDashboard from './Pages/UserDashboard';
 import QRCodeData from './Components/QRCodeData';
 import AdminDashboard from './Pages/AdminDashboard';
@@ -33,7 +33,7 @@ const AppRoutes = () => {
         <Route path="/find-blood" element={<FindBlood />} />
         <Route path="/adminDashboard" element={<AdminDashboard />} />
         <Route path="/registerUser" element={<RegisterUser />} />
-        <Route path="/minting" element={<Minting />} />
+        {/* <Route path="/minting" element={<Minting />} /> */}
         <Route path="/userDashboard" element={<UserDashboard />} />
         <Route path="/userDBTest" element={<UserDbTest />} /> 
         <Route path="/qrcode/:id" element={<QRCodeData />} />
