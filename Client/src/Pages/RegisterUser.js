@@ -56,6 +56,7 @@ const RegisterUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (isSignup) {
       // Registration logic
       if (formData.email !== formData.confirmEmail) {
@@ -70,15 +71,21 @@ const RegisterUser = () => {
         const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
         const user = userCredential.user;
         console.log("User registered with ID: ", user.uid);
+  
         // Add additional user data to Firestore using UID as document ID
-        const userData = { ...formData };
+        const userData = { ...formData, role: 'user' }; // Default role can be 'user'
         delete userData.confirmEmail;
-        // delete userData.password;
         delete userData.confirmPassword;
+  
         await setDoc(doc(db, "users", user.uid), userData);
         console.log("Document written with ID: ", user.uid);
+  
+        // Redirect to the user dashboard after successful registration
+        navigate('/userDashboard');
+        
       } catch (error) {
         console.error("Error registering user: ", error);
+        alert("Error registering user: " + error.message);
       }
     } else {
       // Login logic
@@ -87,8 +94,8 @@ const RegisterUser = () => {
         const user = userCredential.user;
         const userDoc = await getDoc(doc(db, "users", user.uid));
         const userData = userDoc.data();
-
-        if (userData.admin) {
+  
+        if (userData?.role === 'admin') {
           navigate('/adminDashboard');
         } else {
           navigate('/userDashboard');
@@ -96,9 +103,11 @@ const RegisterUser = () => {
         console.log("User logged in with ID: ", user.uid);
       } catch (error) {
         console.error("Error logging in user: ", error);
+        alert("Error logging in user: " + error.message);
       }
     }
   };
+  
 
   return (
     <div>

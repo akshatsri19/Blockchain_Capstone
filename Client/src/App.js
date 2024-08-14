@@ -10,7 +10,7 @@ import Footer from './Components/Footer';
 import UserDashboard from './Pages/UserDashboard';
 import QRCodeData from './Components/QRCodeData';
 import AdminDashboard from './Pages/AdminDashboard';
-import UserDbTest from './Pages/UserDbTest';
+import ProtectedRoute from './Components/ProtectedRoute'; // Import the ProtectedRoute component
 
 const App = () => {
   return (
@@ -31,11 +31,23 @@ const AppRoutes = () => {
         <Route path="/services" element={<Services />} />
         <Route path="/about" element={<About />} />
         <Route path="/find-blood" element={<FindBlood />} />
-        <Route path="/adminDashboard" element={<AdminDashboard />} />
         <Route path="/registerUser" element={<RegisterUser />} />
-        {/* <Route path="/minting" element={<Minting />} /> */}
-        <Route path="/userDashboard" element={<UserDashboard />} />
-        {/* <Route path="/userDBTest" element={<UserDbTest />} />  */}
+        <Route
+          path="/adminDashboard"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/userDashboard"
+          element={
+            <ProtectedRoute allowedRoles={['user']}>
+              <UserDashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/qrcode/:id" element={<QRCodeData />} />
       </Routes>
       {!isQRCodePage && <Footer />}
