@@ -7,6 +7,7 @@ import { db, auth } from '../Firebase/FirebaseConfig.js';
 import { setDoc, doc, getDoc } from 'firebase/firestore';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
+import bcrypt from 'bcryptjs';
 
 
 const RegisterUser = () => {
@@ -71,9 +72,11 @@ const RegisterUser = () => {
         const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
         const user = userCredential.user;
         console.log("User registered with ID: ", user.uid);
+
+        const hashedPassword = await bcrypt.hash(formData.password, 10);
   
         // Add additional user data to Firestore using UID as document ID
-        const userData = { ...formData, role: 'user' }; // Default role can be 'user'
+        const userData = { ...formData, password:hashedPassword,role: 'user' }; // Default role can be 'user'
         delete userData.confirmEmail;
         delete userData.confirmPassword;
   
@@ -81,7 +84,7 @@ const RegisterUser = () => {
         console.log("Document written with ID: ", user.uid);
   
         // Redirect to the user dashboard after successful registration
-        navigate('/userDashboard');
+        setIsSignup(false);
         
       } catch (error) {
         console.error("Error registering user: ", error);
@@ -94,6 +97,13 @@ const RegisterUser = () => {
         const user = userCredential.user;
         const userDoc = await getDoc(doc(db, "users", user.uid));
         const userData = userDoc.data();
+
+        const passwordMatch = await bcrypt.compare(formData.password, userData.password);
+
+        if (!passwordMatch) {
+          alert("Incorrect password.");
+          return;
+        }
   
         if (userData?.role === 'admin') {
           navigate('/adminDashboard');
