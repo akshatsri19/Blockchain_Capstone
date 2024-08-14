@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../Styles/Dashboard.css';
 import { signOut, onAuthStateChanged } from "firebase/auth";
-import { auth, db } from '../Firebase/FirebaseConfig';
+import { auth, db } from '../Firebase/FirebaseConfig.js';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button, ProgressBar, Dropdown, Nav, Form, Modal } from 'react-bootstrap';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
@@ -14,7 +14,9 @@ import logo1 from "../Assets/Logo1.jpg"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-import testImage from '../Assets/g1.jpg';
+import testImage from '../Assets/nft11.png';
+import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
+
 
 const localIpAddress = '172.20.10.4';
 
@@ -50,6 +52,7 @@ const UserDashboard = () => {
 
   const handleLogout = () => {
     signOut(auth).then(() => {
+      localStorage.removeItem('connectedAccount');
       navigate('/');
     }).catch((error) => {
       console.error("Error signing out: ", error);
@@ -78,14 +81,14 @@ const UserDashboard = () => {
 
   return (
     <div className={`dashboard ${open ? 'drawer-open' : 'drawer-closed'}`}>
-      <header className={`app-bar ${open ? 'open' : 'closed'}`} style={{ backgroundColor: "#192841" }}>
+      <header className={`app-bar ${open ? 'open' : 'closed'}`} style={{ backgroundColor: "white", boxShadow:'0 4px 6px rgba(0, 0, 0, 0.2)'  }}>
         <button className="menu-icon" onClick={toggleDrawer}>
           ☰
         </button>
         <Nav className="ml-auto">
-          <Nav.Link as={Link} to="/home" style={navLinkStyle}>Home</Nav.Link>
-          <Nav.Link as={Link} to="/about" style={navLinkStyle}>About</Nav.Link>
+          <Nav.Link as={Link} to="/blogs" style={navLinkStyle}>Blogs</Nav.Link>
           <Nav.Link as={Link} to="/services" style={navLinkStyle}>Services</Nav.Link>
+          <Nav.Link as={Link} to="/about" style={navLinkStyle}>About</Nav.Link>
         </Nav>
         <div className="d-flex align-items-center" style={{ width: "30%" }}>
           <h1 style={brandStyle}>
@@ -101,7 +104,6 @@ const UserDashboard = () => {
               {currentUser.email}
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item href="#/my-profile">My Profile</Dropdown.Item>
               <Dropdown.Item href="#/change-email-password">Change Email or Password</Dropdown.Item>
               <Dropdown.Item href="#/eligibility-quiz">Eligibility Quiz</Dropdown.Item>
               <Dropdown.Divider />
@@ -179,41 +181,61 @@ const Dashboard = ({ account, setAccount }) => {
     setIsEditing(false);
   };
 
+  const disconnectWallet = () => {
+    setAccount(null); 
+    setNfts([]);
+    localStorage.removeItem('connectedAccount'); 
+    alert('MetaMask wallet disconnected successfully!');
+  };
 
   const connectWallet = async () => {
-
     if (window.ethereum) {
       try {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        setAccount(accounts[0]);
-        alert(`MetaMask wallet connected successfully! Account: ${account}`);
+        const connectedAccount = accounts[0];
+        setAccount(connectedAccount);
+        localStorage.setItem('connectedAccount', connectedAccount);
+        alert(`MetaMask wallet connected successfully! Account: ${connectedAccount}`);
       } catch (error) {
         console.error('Error connecting MetaMask', error);
       }
     } else {
       alert('MetaMask is not installed. Please install it to connect your wallet.');
     }
-
-    setLoading(true);
-    
-    try {
-        const response = await axios.get(`http://localhost:5001/api/nft/nfts/${account}`);
-        
-        const nftData = response.data;
-
-        if (nftData.length === 0) {
-            setMessage('No NFTs found');
-        } else {
-          setNfts(nftData); // store all nfts in state
-        }        
-    } catch (error) {
-      console.error('Failed to fetch NFT data:', error);
-      setMessage('Failed to fetch NFT data');
-    } finally {
-      setLoading(false);
-    }
   };
 
+  useEffect(() => {
+    const savedAccount = localStorage.getItem('connectedAccount');
+    if (savedAccount) {
+      setAccount(savedAccount);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchNFTs = async () => {
+      if (account) {
+        setLoading(true);
+        try {
+          const response = await axios.get(`http://localhost:5001/api/nft/nfts/${account}`);
+          const nftData = response.data;
+  
+          if (nftData.length === 0) {
+            setMessage('No NFTs found');
+          } else {
+            setNfts(nftData);
+          }
+        } catch (error) {
+          console.error('Failed to fetch NFT data:', error);
+          setMessage('Failed to fetch NFT data');
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+  
+    fetchNFTs();
+  }, [account]); 
+  
 
   const styles = {
     profileContainer: {
@@ -223,12 +245,12 @@ const Dashboard = ({ account, setAccount }) => {
     },
     leftColumn: {
       padding: '20px',
-      backgroundColor: '#192841',
+      backgroundColor: '#89CFF0',
       borderRadius: '20px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
       textAlign: 'justify',
       margin: '20px auto',
-      color: '#3ca5dc',
+      color: '#192841',
       width:'40%'
     },
     topRightColumn: {
@@ -239,15 +261,14 @@ const Dashboard = ({ account, setAccount }) => {
       boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
       flexDirection: 'row',
       height: '50%',
-      width: '102%'
+      width: '102%',
     },
     bottomRightColumn: {
       padding: '20px',
-      backgroundColor: "#192841",
+      backgroundColor: "#e0f7fa",
       boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
       borderRadius: '10px',
       height: '50%',
-      marginTop: 20,
       width: '102%',
       color: "#e0f7fa"
     },
@@ -255,51 +276,54 @@ const Dashboard = ({ account, setAccount }) => {
       textAlign: 'center',
     },
     image: {
-      width: '150px',
-      height: '150px',
+      width: '160px',
+      height: '180px',
       borderRadius: '50%',
       border: '3px solid #333',
+      objectFit: 'fill',
     },
     header: {
       textAlign: 'center',
       marginTop: 20,
-      color: "#e0f7fa"
+      color:"#192841" 
     },
     blockquote: {
       fontStyle: 'italic',
       color: '#666',
       textAlign: 'center',
       margin: '20px 0',
-      color: '#3ca5dc'
+      color:"#192841" 
     },
     section: {
       marginBottom: '20px',
+      backgroundColor:"#e0f7fa",
+      padding:10,
+      borderRadius:20
     },
     sectionHeader: {
       marginBottom: '10px',
-      color: '#e0f7fa',
-      textAlign: 'center'
+      color:"#192841" ,
+      textAlign: 'center',
+      fontWeight:'bold'
     },
     listItem: {
       backgroundColor: '#e0f7fa',
       padding: '1px',
-      marginLeft: -30,
+      marginLeft: -20,
       borderRadius: '5px',
       marginBottom: '10px',
-      textAlign: "center"
+      // textAlign: "center"
     },
     iconButton: {
       cursor: 'pointer'
     }
   };
 
-  // useEffect(() => {
-  //   fetchNFTData();
-  // }, []);
 
   return (
 
     <div style={styles.profileContainer}>
+
       <div style={styles.leftColumn}>
         <button onClick={isEditing ? handleSaveClick : handleEditClick}>
           <FontAwesomeIcon icon={isEditing ? faSave : faEdit} style={styles.iconButton} />
@@ -321,7 +345,7 @@ const Dashboard = ({ account, setAccount }) => {
             name="name"
             value={profile.name}
             onChange={handleChange}
-            style={{ width: '100%', marginBottom: 10 }}
+            style={{ width: '100%', marginBottom: 10}}
           />
         ) : (
           <h2 style={styles.header}>{profile.name}</h2>
@@ -342,14 +366,29 @@ const Dashboard = ({ account, setAccount }) => {
         <div style={styles.section}>
           <h3 style={styles.sectionHeader}>Ways to Earn</h3>
           <ul>
-            <li style={styles.listItem}>Limited access to high-quality investment opportunities in desired sectors</li>
-            <li style={styles.listItem}>Difficulty in finding transparent and trustworthy entrepreneurs and startups</li>
-            <li style={styles.listItem}>Challenges in identifying ventures with both high scalability and meaningful societal impact</li>
-          </ul>
+            <li style={styles.listItem}>Share your blood donation experiance to motivate others</li>
+            <li style={styles.listItem}>Add a blog about out platform sharing your experience</li>
+            <li style={styles.listItem}>Complete 5 donations to earn Trust Tokens</li>
+          </ul> 
         </div>
       </div>
 
       <div style={{ width: '100%', margin: 20 }}>
+
+       
+
+        <div style={styles.bottomRightColumn}>
+          <h3 style={styles.sectionHeader}>Share your experiance</h3>
+          <textarea
+            name="blog"
+            placeholder="Write your blog here..."
+            value={profile.blog}
+            onChange={handleChange}
+            style={{ width: '100%', height: '50%', borderColor:"white", borderRadius:10 }}
+          />
+          <button style={{ marginTop: '20px' , backgroundColor:"#3ca5dc", borderRadius:20, color:'white', padding:8, marginRight:20, borderColor:"#3ca5dc"}}>Save Blog</button>
+          <button style={{ marginTop: '20px' , backgroundColor:"#3ca5dc", borderRadius:20, color:'white', padding:8, borderColor:"#3ca5dc"}}>Your Blogs</button>
+        </div>
 
         <div style={styles.topRightColumn}>
 
@@ -362,45 +401,43 @@ const Dashboard = ({ account, setAccount }) => {
             <div style={buttonContainerStyle}>
               <Button variant="outline-primary" style={actionButtonStyle}>Claim Rewards</Button>
               <Button variant="outline-secondary" style={actionButtonStyle}>View Transactions</Button>
-              <Button variant="outline-success" style={actionButtonStyle} onClick={connectWallet}>Connect MetaMask</Button>
-            </div>
+              <Button
+                  variant={account ? "outline-danger" : "outline-success"}
+                  style={actionButtonStyle}
+                  onClick={account ? disconnectWallet : connectWallet}
+                >
+                  {account ? `Disconnect ${account.slice(0, 6)}...${account.slice(-4)}` : 'Connect MetaMask'}
+                </Button>
+              </div>
+              {account && (
+                <p style={{ marginTop: '10px', color: '#3ca5dc' }}>
+                  Connected Wallet Address: {account}
+                </p>
+              )}
           </section>
           <section className="nfts-earned" style={tokensEarnedStyle}>
             <h2 style={tokensEarnedTitleStyle}>NFT Earned</h2>
             {loading ? (
-        <p>Loading your NFTs...</p>
-      ) : nfts.length > 0 ? (
-        <div>
+          <p>Loading your NFTs...</p>
+          ) : nfts.length > 0 ? (
+          <div>
             <div className="nft-card-container">
-            {nfts.map((nft, index) => (
-                <div key={index} className="nft-card">
+            {nfts.map((nft) => (
+                <div key={nft.tokenId} className="nft-card">
                 <img src={testImage} alt="testImage" width="200" />
                 {/* <p>Name: {nft.metadata.name}</p> */}
                 {/* <p>Description: {nft.metadata.description}</p> */}
                     <div className="nft-details">
-                        <p>Token ID: {nft.tokenId}</p>
+                        <p style={{color:"#3ca5dc", marginTop:10}}>Token ID: {nft.tokenId}</p>
                     </div>
                 </div>
             ))}
             </div>
-        </div>
-      ) : (
-        <p>{message}</p>
-      )}
+          </div>
+          ) : (
+          <p>{message}</p>
+          )}
           </section>
-        </div>
-
-        <div style={styles.bottomRightColumn}>
-          <h3 style={styles.sectionHeader}>Contribute to Community</h3>
-          <textarea
-            name="blog"
-            placeholder="Write your blog here..."
-            value={profile.blog}
-            onChange={handleChange}
-            style={{ width: '100%', height: '50%' }}
-          />
-          <button style={{ marginTop: '20px' , backgroundColor:"#3ca5dc", borderRadius:20, color:'white', padding:8, marginRight:20}}>Save Blog</button>
-          <button style={{ marginTop: '20px' , backgroundColor:"#3ca5dc", borderRadius:20, color:'white', padding:8}}>Your Blogs</button>
         </div>
       </div>
     </div>
@@ -417,6 +454,20 @@ const BookAppointmentSection = () => {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [isEligible, setIsEligible] = useState(true);
+  const [isFinished, setIsFinished] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+
+  const questions = [
+    "Are you 17 years old or more?",
+    "Have you had a tattoo or piercing in the last three months?",
+    "Have you travelled outside of Canada, the continental USA, Antarctica or Europe in the last 3 weeks?",
+    "Have you been to the dentist for an extraction, surgery or root canal in the last three days?",
+    "Are you pregnant, have been pregnant or had a baby in the last six months?",
+    "Are you taking prescription medication(s)?",
+    "Do you weigh more than 50 kg (110 lb.)?"
+  ];
 
 
   const handleSearchChange = (e) => {
@@ -458,6 +509,64 @@ const BookAppointmentSection = () => {
   const handleBackClick = () => {
     setSelectedCenter(null);
   };
+
+  const handleCheckEligibility = (answer) => {
+    if (currentQuestion === 0) {
+      if (answer === 'yes') {
+        setCurrentQuestion(1);
+      } else {
+        setIsEligible(false);
+      }
+    } else if (currentQuestion === 1) {
+      if (answer === 'no') {
+        setCurrentQuestion(2);
+      } else {
+        setIsEligible(false);
+      }
+    } else if (currentQuestion === 2) {
+      if (answer === 'no') {
+        setCurrentQuestion(3);
+      } else {
+        setIsEligible(false);
+      }
+    } else if (currentQuestion === 3) {
+      if (answer === 'no') {
+        setCurrentQuestion(4); 
+      } else {
+        setIsEligible(false);
+      }
+    } else if (currentQuestion === 4) {
+      if (answer === 'no') {
+        setCurrentQuestion(5); 
+      } else {
+        setIsEligible(false);
+      }
+    } else if (currentQuestion === 5) {
+      if (answer === 'no') {
+        setCurrentQuestion(6); 
+      } else {
+        setIsEligible(false);
+      }
+    } else if (currentQuestion === 6) {
+      if (answer === 'yes') {
+        setIsFinished(true) ;
+      } else {
+        setIsEligible(false);
+      }
+    } else {
+      handleClose();
+    }
+    alert('Eligibility check functionality to be implemented.');
+  };
+
+  const handleShow = () => {
+    setShowPopup(true);
+    setCurrentQuestion(0);
+    setIsEligible(true);
+    setIsFinished(false);
+  };
+
+  const handleClose = () => setShowPopup(false);
 
   return (
     <section style={sectionStyle}>
@@ -536,12 +645,37 @@ const BookAppointmentSection = () => {
                     </Form.Group>
                   </div>
                 </div>
+                <Button variant="secondary" onClick={handleShow} style={submitButtonStyle}>
+                    Check Eligibility
+                </Button>
                 <Button variant="primary" type="submit" style={submitButtonStyle}>
                   Book Appointment
                 </Button>
                 <Button variant="secondary" onClick={handleBackClick} style={submitButtonStyle}>
                   Back
                 </Button>
+                <Modal show={showPopup} onHide={handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Eligibility Check</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {isEligible ? (
+                isFinished ? (
+                  <h5>Great! You are now ready to book an appointment to give blood.</h5>
+                ) : (
+                  <>
+                    <h5>{questions[currentQuestion]}</h5>
+                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                      <Button variant="success" onClick={() => handleCheckEligibility('yes')}>Yes</Button>
+                      <Button variant="danger" onClick={() => handleCheckEligibility('no')}>No</Button>
+                    </div>
+                  </>
+                )
+              ) : (
+                <h5>You are not eligible to donate blood.</h5>
+              )}
+            </Modal.Body>
+          </Modal>
               </Card.Body>
             </Card>
           )}
@@ -567,10 +701,31 @@ const BookAppointmentSection = () => {
 const MyAppointmentsSection = ({ appointments, account }) => {
 
   const [message, setMessage] = useState('');
+  const [appointmentList, setAppointmentList] = useState([]);
+  const [isClaimed, setIsClaimed] = useState(false);
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: 'AIzaSyAAFI4ON-NQGEu4KcpoIVrPaqkHjlqOE-8'
   });
+
+  const fetchAppointments = async () => {
+    try {
+      const q = query(collection(db, 'appointments'), where('userId', '==', auth.currentUser.uid));
+      const querySnapshot = await getDocs(q);
+      const fetchedAppointments = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setAppointmentList(fetchedAppointments);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments(); 
+  }, []);
+
+  const refreshAppointments = async () => {
+    fetchAppointments(); 
+  };
 
   const handleClaimNFT = async () => {
     try {
@@ -583,12 +738,7 @@ const MyAppointmentsSection = ({ appointments, account }) => {
 
       if (response.data.success) {
         setMessage('NFT claimed successfully!');
-        
-        // Remove the claimed milestone from the showClaimedButton array
-        // setShowClaimedButton(prev => prev.filter(milestone => milestone !== donationCount));
-
-        // After claiming, fetch the updated NFT data
-        // fetchNFTData();
+        setIsClaimed(true);
       } else {
         setMessage('Failed to claim NFT');
       }
@@ -601,33 +751,58 @@ const MyAppointmentsSection = ({ appointments, account }) => {
 
   return (
     <section style={sectionStyle1}>
+      <div style={{display:'flex', flexDirection:'row', justifyContent:"space-between"}}>
       <h2 style={sectionTitleStyle}>My Appointments</h2>
-      <button onClick={() => window.location.reload()}>Refresh Appointments</button>
+      <button onClick={refreshAppointments} style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+          <FontAwesomeIcon icon={faSyncAlt} size="lg" style={{ color: '#3ca5dc' }} />
+        </button>
+      </div>
       <ul style={listStyle1}>
-        {appointments.map(appointment => (
+        {appointmentList.map(appointment => (
           <li key={appointment.id} style={listItemStyle}>
-            <p><strong>Location:</strong> {appointment.location}</p>
-            <p><strong>Donation Center:</strong> {appointment.donationCenter}</p>
-            <p><strong>Date:</strong> {appointment.date}</p>
-            <p><strong>Time:</strong> {appointment.time}</p>
-            {appointment.confirmation && (
-              <Button variant="outline-primary" style={actionButtonStyle} onClick={handleClaimNFT}>
-                Claim Rewards
-              </Button>
-            )}
-            <QRCode value={`http://${localIpAddress}:3000/qrcode/${appointment.id}?account=${encodeURIComponent(account)}`} size={128}/>
+          <div style={{ display: 'flex', flexDirection: 'row'}}>
+            <div>
+              <div style={{ width: '100%', marginTop:30, marginRight:30, }}>
+                <p><strong>Location:</strong> {appointment.location}</p>
+                <p><strong>Donation Center:</strong> {appointment.donationCenter}</p>
+                <p><strong>Date:</strong> {appointment.date}</p>
+                <p><strong>Time:</strong> {appointment.time}</p>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
+              <QRCode value={`http://${localIpAddress}:3000/qrcode/${appointment.id}?account=${encodeURIComponent(account)}`} size={150} />
+              {appointment.confirmation && (
+                isClaimed ? (
+                  <p style={{ color: '#3ca5dc', marginTop: '10px' }}>
+                    Rewards Already Claimed
+                  </p>
+                ) : (
+                  <Button variant="outline-primary" style={actionButtonStyle1} onClick={handleClaimNFT}>
+                    Claim Rewards
+                  </Button>
+                )
+              )}
+              </div>
+            </div>
+            
             {isLoaded && (
-              <div style={{ height: '400px', marginTop: '20px' }}>
+              <div style={{ width: '50%', height: '400px', marginTop: '20px' }}>
                 <GoogleMap
-                  mapContainerStyle={{ width: '100%', height: '100%' }}
+                  mapContainerStyle={{ width: '90%', height: '80%', borderRadius:20, marginLeft:75, marginTop:30 }}
                   center={{ lat: appointment.lat, lng: appointment.lng }}
                   zoom={14}
+                  onLoad={map => {
+                      new window.google.maps.Marker({
+                      map,
+                      position: { lat: appointment.lat, lng: appointment.lng },
+                      title: appointment.donationCenter
+                    });
+                  }}
                 >
-                  <Marker key={appointment.id} position={{ lat: appointment.lat, lng: appointment.lng }} />
                 </GoogleMap>
               </div>
             )}
-          </li>
+          </div>
+        </li>
         ))}
       </ul>
     </section>
@@ -655,8 +830,9 @@ const sectionStyle1 = {
   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
   textAlign: 'center',
   margin: '20px auto',
-  width: '80%',
+  width: '110%',
   height: '100%',
+  marginLeft:-150
 };
 
 const formContainerStyle = {
@@ -687,14 +863,6 @@ const submitButtonStyle = {
   marginBottom: 30
 };
 
-const listStyle = {
-  listStyleType: 'none',
-  padding: 0,
-  margin: 0,
-  overflowY: 'auto',
-  borderRadius: '4px',
-  height: 300
-};
 
 const listStyle1 = {
   listStyleType: 'none',
@@ -702,8 +870,7 @@ const listStyle1 = {
   margin: 0,
   maxHeight: '95%',
   overflowY: 'auto',
-  border: '1px solid #ddd',
-  borderRadius: '4px',
+  borderRadius: '5px',
 };
 
 const listItemStyle = {
@@ -713,12 +880,6 @@ const listItemStyle = {
   borderRadius: '5px',
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   color: 'white'
-};
-
-
-const centerInfoStyle = {
-  margin: '20px 0',
-  textAlign: 'left',
 };
 
 
@@ -763,13 +924,12 @@ const iconStyle = {
 };
 
 const tokensEarnedStyle = {
-  marginRight: 10,
   padding: '20px',
   backgroundColor: '#192841',
   borderRadius: '8px',
   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
   textAlign: 'center',
-  margin: '20px auto',
+  marginRight:20,
   width: '50%',
 
 };
@@ -807,4 +967,13 @@ const buttonContainerStyle = {
 const actionButtonStyle = {
   width: '150px',
   fontFamily: 'Verdana, Geneva, sans-serif',
+};
+
+const actionButtonStyle1 = {
+  marginTop:20,
+  width: '150px',
+  fontFamily: 'Verdana, Geneva, sans-serif',
+  backgroundColor:"#192841",
+  color:"#3ca5dc",
+  borderColor:"#192841"
 };

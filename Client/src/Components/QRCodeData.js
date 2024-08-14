@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { updateDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '../Firebase/FirebaseConfig';
+import logo1 from "../Assets/Logo1.jpg"
 
 
 const QRCodeData = () => {
@@ -44,7 +45,6 @@ const QRCodeData = () => {
 
       localStorage.setItem('refreshAppointments', 'true');
   
-      // Update the local state to reflect the change
       setAppointment((prevAppointment) => ({
         ...prevAppointment,
         confirmation: true,
@@ -63,18 +63,48 @@ const QRCodeData = () => {
 
   return (
     <div>
-      {console.log("Button rendering")}
-      <h2>Appointment Details</h2>
-      <p><strong>Location:</strong> {appointment.location}</p>
-      <p><strong>Donation Center:</strong> {appointment.donationCenter}</p>
-      <p><strong>Date:</strong> {appointment.date}</p>
-      <p><strong>Time:</strong> {appointment.time}</p>
-      <p><strong>Account:</strong> {account}</p>
-      <p><strong>Confirmation:</strong> {appointment.confirmation.toString()}</p>
-      <button onClick={donationConfirmation}>Donation Confirmation</button>
-      {message && <p>{message}</p>}
-    </div>
+        <div style={{ width: "100%", display: 'flex', flexDirection: 'row', justifyContent: 'center', 
+          alignItems: 'center'}}>
+            <h1 style={brandStyle}>
+              <span style={{ color: '#ab0a0f' }}>Trust</span>
+              <span style={{ color: '#4299cf' }}>Blu</span>
+            </h1>
+            <img src={logo1} style={logoStyle} alt="Logo" />
+        </div>
+        <div style={{padding:20, textAlign:'justify'}}>
+          <h2 style={{fontWeight:'bold'}}>Appointment Details</h2>
+          <p><strong>Location:</strong> {appointment.location}</p>
+          <p><strong>Donation Center:</strong> {appointment.donationCenter}</p>
+          <p><strong>Date:</strong> {appointment.date}</p>
+          <p><strong>Time:</strong> {appointment.time}</p>
+          <button style = {buttonStyle} onClick={donationConfirmation}>Donation Confirmation</button>
+          {message && <p>{message}</p>}
+        </div>
+      </div> 
   );
 };
 
 export default QRCodeData;
+
+const brandStyle = {
+  color: '#3ca5dc',
+  fontFamily: 'Verdana, Geneva, sans-serif', 
+  fontSize: '2.2rem', 
+  fontStyle: 'italic',
+  fontWeight: 'bold',
+};
+
+const logoStyle = {
+  width: '20%',
+  height: '20%',
+  marginLeft: '-5px'
+};
+
+const buttonStyle = {
+  backgroundColor:"#3ca5dc",
+  color:'white',
+  padding:10,
+  borderRadius:10,
+  fontSize:20,
+  marginLeft:'22%'
+}

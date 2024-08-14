@@ -103,7 +103,7 @@ const RegisterUser = () => {
   return (
     <div>
       <NavigationBar />
-      <div style={{ backgroundColor: "#2E5984"}}>
+      <div style={{ backgroundColor: "white"}}>
         <Container>
           <Row className="align-items-center">
             <div style={{display:'flex',flexDirection:"row", marginTop:100,marginLeft:"45%"}}>
@@ -125,12 +125,12 @@ const RegisterUser = () => {
               </Button>
             </div>
             <Col md={7} className="d-none d-md-block" style={{ paddingRight:"30px", marginTop:10, marginBottom:150 }}>
-              <h2 className="text-white">You are just a step away!</h2>
-              <p className="text-white">
+              <h2 className="text-black">You are just a step away!</h2>
+              <p className="text-black">
                 Complete the form to create an account. Once you've completed the required
                 information, proceed to the next step.
               </p>
-              <p className="text-white">Thank you for being part of Canada's lifeline.</p>
+              <p className="text-black">Thank you for being part of Canada's lifeline.</p>
               <img
                 src={userRegister}
                 alt="Description of the image"
@@ -142,27 +142,27 @@ const RegisterUser = () => {
                 {isSignup ? (
                   <>
                     <Form.Group controlId="formEmail">
-                      <Form.Label className="text-white">Email address (this will be your username) *</Form.Label>
+                      <Form.Label className="text-black">Email address (this will be your username) *</Form.Label>
                       <Form.Control type="email" placeholder="Enter email" name="email" value={formData.email} onChange={handleChange} />
                     </Form.Group>
                     <Form.Group controlId="formConfirmEmail">
-                      <Form.Label className="text-white">Confirm email address *</Form.Label>
+                      <Form.Label className="text-black">Confirm email address *</Form.Label>
                       <Form.Control type="email" placeholder="Confirm email" name="confirmEmail" value={formData.confirmEmail} onChange={handleChange} />
                     </Form.Group>
                     <Form.Group controlId="formFirstName">
-                      <Form.Label className="text-white">First name *</Form.Label>
+                      <Form.Label className="text-black">First name *</Form.Label>
                       <Form.Control type="text" placeholder="First name" name="firstName" value={formData.firstName} onChange={handleChange} />
                     </Form.Group>
                     <Form.Group controlId="formLastName">
-                      <Form.Label className="text-white">Last name *</Form.Label>
+                      <Form.Label className="text-black">Last name *</Form.Label>
                       <Form.Control type="text" placeholder="Last name" name="lastName" value={formData.lastName} onChange={handleChange} />
                     </Form.Group>
                     <Form.Group controlId="formDonorNumber">
-                      <Form.Label className="text-white">Donor number</Form.Label>
+                      <Form.Label className="text-black">Donor number</Form.Label>
                       <Form.Control type="text" placeholder="Enter your donor number (if you have one)" name="donorNumber" value={formData.donorNumber} onChange={handleChange} />
                     </Form.Group>
                     <Form.Group controlId="formDateOfBirth">
-                      <Form.Label className="text-white">Date of birth *</Form.Label>
+                      <Form.Label className="text-black">Date of birth *</Form.Label>
                       <Row>
                         <Col xs={4}>
                           <Form.Control type="text" placeholder="Month" name="month" value={formData.dateOfBirth.month} onChange={handleDateChange} />
@@ -176,17 +176,17 @@ const RegisterUser = () => {
                       </Row>
                     </Form.Group>
                     <Form.Group controlId="formPostalCode">
-                      <Form.Label className="text-white">Postal code *</Form.Label>
+                      <Form.Label className="text-black">Postal code *</Form.Label>
                       <Form.Control type="text" placeholder="Postal code" name="postalCode" value={formData.postalCode} onChange={handleChange} />
                     </Form.Group>
                     <Form.Group controlId="formPhoneNumber">
-                      <Form.Label className="text-white">Phone number *</Form.Label>
+                      <Form.Label className="text-black">Phone number *</Form.Label>
                       <Form.Control type="text" placeholder="Phone number" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
                     </Form.Group>
                     <Form.Group controlId="formPassword">
-                      <Form.Label className="text-white">Password *</Form.Label>
+                      <Form.Label className="text-black">Password *</Form.Label>
                       <Form.Control type="password" placeholder="Password" name="password" value={formData.password} onChange={handleChange} />
-                      <Form.Text style={{ color: 'white' }}>
+                      <Form.Text style={{ color: 'black' }}>
                         Passwords must contain:
                         <ul>
                           <li>Minimum 8 characters</li>
@@ -199,7 +199,7 @@ const RegisterUser = () => {
                       </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="formConfirmPassword">
-                      <Form.Label className="text-white">Confirm password *</Form.Label>
+                      <Form.Label className="text-black">Confirm password *</Form.Label>
                       <Form.Control type="password" placeholder="Confirm password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} />
                     </Form.Group>
                     <Button type="submit" style={{ marginTop: 20, marginBottom: 20, backgroundColor:"#3ca5dc", borderColor:"#3ca5dc"  }}>
@@ -209,11 +209,11 @@ const RegisterUser = () => {
                 ) : (
                   <>
                     <Form.Group controlId="formEmail">
-                      <Form.Label className="text-white">Email address</Form.Label>
+                      <Form.Label className="text-black">Email address</Form.Label>
                       <Form.Control type="email" placeholder="Enter email" name="email" value={formData.email} onChange={handleChange} />
                     </Form.Group>
                     <Form.Group controlId="formPassword">
-                      <Form.Label className="text-white">Password</Form.Label>
+                      <Form.Label className="text-black">Password</Form.Label>
                       <Form.Control type={showPassword ? "text" : "password"} placeholder="Password" name="password" value={formData.password} onChange={handleChange} />
                     </Form.Group>
                     <Form.Group controlId="formShowPassword">

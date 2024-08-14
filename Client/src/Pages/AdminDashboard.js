@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
 import '../Styles/Admin.css';
+import { signOut, onAuthStateChanged } from "firebase/auth";
+import { auth, db } from '../Firebase/FirebaseConfig.js';
+import { useNavigate, Link } from 'react-router-dom';
+import {Dropdown, Nav} from 'react-bootstrap';
+import logo1 from "../Assets/Logo1.jpg"
+
 
 const AdminDashboard = () => {
   const [recipient, setRecipient] = useState("");
@@ -13,6 +19,8 @@ const AdminDashboard = () => {
   const [isActive, setIsActive] = useState(true);
   const [taskDetails, setTaskDetails] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+  const navigate = useNavigate();
 
   const handleSingleMint = async () => {
     const response = await fetch("http://localhost:5001/api/mint", {
@@ -106,12 +114,62 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleLogout = () => {
+    signOut(auth).then(() => {
+      navigate('/');
+    }).catch((error) => {
+      console.error("Error signing out: ", error);
+    });
+  };
+
   useEffect(() => {
     fetchRewardPoolBalance();
     fetchNotifications();
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        navigate('/');
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
+
   return (
+    <div>
+      <div>
+      <header style={{ backgroundColor: "#192841", display:'flex',flexDirection:'row', justifyContent:'space-between', height:70 }}>
+        <Nav className="ml-auto">
+          <Nav.Link as={Link} to="/blogs" style={navLinkStyle}>Blogs</Nav.Link>
+          <Nav.Link as={Link} to="/services" style={navLinkStyle}>Services</Nav.Link>
+          <Nav.Link as={Link} to="/about" style={navLinkStyle}>About</Nav.Link>
+        </Nav>
+        <div className="d-flex align-items-center" style={{ width: "30%" }}>
+          <h1 style={brandStyle}>
+            <span style={{ color: '#ab0a0f' }}>Trust</span>
+            <span style={{ color: '#4299cf' }}>Blu</span>
+          </h1>
+          <img src={logo1} style={logoStyle} className="d-none d-md-block" alt="Logo" />
+        </div>
+
+        {currentUser && (
+          <Dropdown align="end">
+            <Dropdown.Toggle variant="outline-light" style={dropdownToggleStyle}>
+              {currentUser.email}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item href="#/change-email-password">Change Email or Password</Dropdown.Item>
+              <Dropdown.Item href="#/eligibility-quiz">Eligibility Quiz</Dropdown.Item>
+              <Dropdown.Divider />
+              <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
+      </header>
+    </div>
     <div className="container">
         <h1>Admin Page</h1>
         <div className="card-container">
@@ -135,7 +193,7 @@ const AdminDashboard = () => {
                   ))}
                 </ul>
             </div>
-
+{/* 
             <div className="card">
                 <h2>Mint to Recipient</h2>
                 <input
@@ -151,7 +209,7 @@ const AdminDashboard = () => {
                 onChange={(e) => setAmount(e.target.value)}
                 />
                 <button onClick={handleSingleMint}>Mint Tokens</button>
-            </div>
+            </div> */}
 
             <div className="card">
                 <h2>Batch Mint for Airdrops</h2>
@@ -211,7 +269,35 @@ const AdminDashboard = () => {
             </div>
         </div>
     </div>
+    </div>
+    
   );
 };
 
 export default AdminDashboard;
+
+const navLinkStyle = {
+  color: '#3ca5dc',
+  fontSize: '1.2rem',
+  marginLeft: '20px',
+  textDecoration: 'none'
+};
+const brandStyle = {
+  color: '#3ca5dc',
+  fontFamily: 'Verdana, Geneva, sans-serif',
+  fontSize: '2rem',
+  fontStyle: 'italic',
+  fontWeight: 'bold',
+};
+
+const logoStyle = {
+  width: '14%',
+  height:50,
+  marginLeft: '-5px'
+};
+
+const dropdownToggleStyle = {
+  color: '#3ca5dc',
+  border: 'none',
+  fontSize: 25
+};

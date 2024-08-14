@@ -6,3 +6,12 @@
         transform: translateX(-100%);
     }
 }
+
+@keyframes colorTransition {
+    0% {
+      background-position: 0%;
+    }
+    100% {
+      background-position: 100%;
+    }
+  }

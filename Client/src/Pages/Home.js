@@ -33,7 +33,6 @@ const Home = () => {
   const h1Ref = useRef(null);
   const imgRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
   const [showPopup, setShowPopup] = useState(false);
-  const [hoveredIcon, setHoveredIcon] = useState(null);
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [isEligible, setIsEligible] = useState(true);
@@ -161,7 +160,7 @@ const Home = () => {
         <div style={overlayStyle}></div>
 
         <div style={textContainerStyle}>
-          <p style={headingStyle}>Building Trust, Saving Lives</p>
+          <p style={headingStyle}>Building Trust, Saving Lives !</p>
           <Button as={Link} to="/about" variant="outline-light" style={buttonStyle}>Learn more</Button>
         </div>
       </div>
@@ -428,7 +427,7 @@ const overlayStyle = {
   width: '100%',
   height: '100%',
   backgroundColor: 'black',
-  opacity: 0.5,
+  opacity: 0.1,
   zIndex: 0
 };
 
@@ -449,16 +448,12 @@ const textContainerStyle = {
 };
 
 const headingStyle = {
-   fontFamily: 'Verdana, Geneva, sans-serif',
+  fontFamily: 'Verdana, Geneva, sans-serif',
   width:"100%",
   fontSize: '3.5vw',
-  color: 'white',
-  '@media (max-width: 768px)': {
-    fontSize: '8vw',
-  },
-  '@media (max-width: 576px)': {
-    fontSize: '10vw',
-  }
+  color:'black',
+  fontWeight:'bold',
+  fontStyle: 'italic',
 };
 
 const headingStyleE = {
@@ -466,12 +461,6 @@ const headingStyleE = {
   fontSize: '2vw',
   color: '#3ca5dc',
   marginRight:20,
-  '@media (max-width: 768px)': {
-    fontSize: '4vw',
-  },
-  '@media (max-width: 576px)': {
-    fontSize: '6vw',
-  },
 };
 
 const revolveAnimation = {
@@ -487,12 +476,6 @@ const buttonStyle = {
   fontWeight: 'bold',
   padding: '10px 20px',
   fontSize: '1vw',
-  '@media (max-width: 768px)': {
-    fontSize: '3vw',
-  },
-  '@media (max-width: 576px)': {
-    fontSize: '4vw',
-  },
 };
 
 const sectionStyle = {
@@ -516,11 +499,7 @@ const whyDonateStyle = {
   width: '40%',
   height: '40%',
   padding: '10px',
-  borderRadius:50,
-  '@media (min-width: 768px)': {
-    flex: '1 1 50%',
-    padding: '20px',
-  },
+  borderRadius:50
 };
 
 const imageStyle = {
@@ -528,17 +507,7 @@ const imageStyle = {
   width: '220px',
   height: '220px',
   margin: '10px',
-  borderRadius:5,
-  '@media (max-width: 768px)': {
-    width: '120px',
-    height: '120px',
-    margin: '8px',
-  },
-  '@media (max-width: 576px)': {
-    width: '100px',
-    height: '100px',
-    margin: '6px',
-  },
+  borderRadius:5
 };
 
 const horizontalScrollStyle = {
@@ -555,12 +524,6 @@ const horizontalScrollStyle = {
   backgroundColor: "white",
   boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
   borderRadius: 20,
-  '@media (max-width: 768px)': {
-    padding: '8px',
-  },
-  '@media (max-width: 576px)': {
-    padding: '6px',
-  },
 };
 
 
@@ -574,13 +537,7 @@ const eligibilityStyle = {
   justifyContent:"space-between",
   flexDirection:'row',
   padding:10,
-  color:"#3ca5dc",
-  '@media (max-width: 768px)': {
-    padding: '15px',
-  },
-  '@media (max-width: 576px)': {
-    padding: '10px',
-  },
+  color:"#3ca5dc"
 };
 
 const h1VisibleStyle = {
@@ -612,10 +569,6 @@ const collaboratorCardStyle = {
   borderRadius: 20,
   alignItems:"center",
   borderColor:"#3ca5dc",
-  
-  '@media (max-width: 768px)': {
-      width: 'calc(100% - 20px)',
-    },
 };
 
 const leftCardStyle = {

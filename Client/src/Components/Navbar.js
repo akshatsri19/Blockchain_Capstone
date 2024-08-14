@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Button, NavDropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from "../Assets/logo.png";
+
 import logo1 from "../Assets/Logo1.jpg"
 
 const NavigationBar = () => {
@@ -15,12 +15,10 @@ const NavigationBar = () => {
     if (window.scrollY > 50) {
       setNavbarColor('white');
       setNavbarPosition('fixed');
-      setLinkColor('black')
       setBoxShadow('0 4px 6px rgba(0, 0, 0, 0.5)')
     } else {
       setNavbarColor('transparent');
       setNavbarPosition('absolute');
-      setLinkColor('white')
       setBoxShadow('0 4px 6px rgba(0, 0, 0, 0)')
     }
   };
@@ -43,11 +41,12 @@ const NavigationBar = () => {
   
 
   const linkStyle = {
-    width:100,
-    color: linkColor,
+    width:120,
+    color: 'black',
     marginRight: '80px',
     fontFamily: 'Verdana, Geneva, sans-serif', 
     fontSize: 18,
+    fontWeight:'bold'
   };
 
   const buttonStyle = {
